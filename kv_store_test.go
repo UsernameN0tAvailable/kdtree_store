@@ -125,7 +125,7 @@ func TestUpsertKey(t *testing.T) {
 	}
 }
 
-func TestScanRange(t *testing.T) {
+func TestScanRange3D(t *testing.T) {
 	store, err := NewKVStore(&KVStoreOptions{directory: STOREPATH, size: STORESIZE})
 	assert.NoError(t, err)
 	// Add a key first
@@ -154,7 +154,36 @@ func TestScanRange(t *testing.T) {
 	assert.Len(t, entries, 4)
 }
 
-func TestScanGTRange(t *testing.T) {
+func TestScanRange4D(t *testing.T) {
+	store, err := NewKVStore(&KVStoreOptions{directory: STOREPATH, size: STORESIZE})
+	assert.NoError(t, err)
+	// Add a key first
+	oldData := RandStringBytes(10)
+
+	// create and store points
+	point_1 := NewPoint(Key{0, 0, 0, 0})
+	point_2 := NewPoint(Key{1, 1, 1, 1})
+	point_3 := NewPoint(Key{2, 2, 2, 2})
+	point_4 := NewPoint(Key{2, 3, 2, 2})
+	point_5 := NewPoint(Key{3, 3, 3, 3})
+
+	assert.NoError(t, store.Put(&point_1, oldData))
+	assert.NoError(t, store.Put(&point_2, oldData))
+	assert.NoError(t, store.Put(&point_3, oldData))
+	assert.NoError(t, store.Put(&point_4, oldData))
+	assert.NoError(t, store.Put(&point_5, oldData))
+
+
+	entries, err := store.Scan(&Range{
+		minKey: NewPoint(Key{1, 1, 1, 1}),
+		maxKey: NewPoint(Key{3, 3, 3, 3}),
+	})
+	assert.NoError(t, err)
+	// Check length of slice
+	assert.Len(t, entries, 4)
+}
+
+func TestScanGTRange3D(t *testing.T) {
 	store, err := NewKVStore(&KVStoreOptions{directory: STOREPATH, size: STORESIZE})
 	assert.NoError(t, err)
 	// Add a key first
@@ -186,7 +215,41 @@ func TestScanGTRange(t *testing.T) {
 	assert.Len(t, entries, 3)
 }
 
-func TestScanLERange(t *testing.T) {
+
+func TestScanGTRange4D(t *testing.T) {
+	store, err := NewKVStore(&KVStoreOptions{directory: STOREPATH, size: STORESIZE})
+	assert.NoError(t, err)
+	// Add a key first
+	oldData := RandStringBytes(10)
+
+	// create and store points
+	point_1 := NewPoint(Key{0, 0, 0, 0})
+	point_2 := NewPoint(Key{1, 1, 1, 1})
+	point_3 := NewPoint(Key{2, 2, 2, 2})
+	point_4 := NewPoint(Key{2, 3, 2, 2})
+	point_5 := NewPoint(Key{3, 3, 3, 3})
+
+	assert.NoError(t, store.Put(&point_1, oldData))
+	assert.NoError(t, store.Put(&point_2, oldData))
+	assert.NoError(t, store.Put(&point_3, oldData))
+	assert.NoError(t, store.Put(&point_4, oldData))
+	assert.NoError(t, store.Put(&point_5, oldData))
+
+	r := Range{
+		minKey: NewPoint(Key{2, 2, 2, 2}),
+	}
+
+	fmt.Println(r)
+
+	entries, err := store.Scan(&r)
+
+	assert.NoError(t, err)
+	// Check length of slice
+	assert.Len(t, entries, 3)
+}
+
+
+func TestScanLERange3D(t *testing.T) {
 	store, err := NewKVStore(&KVStoreOptions{directory: STOREPATH, size: STORESIZE})
 	assert.NoError(t, err)
 	// Add a key first
@@ -207,6 +270,34 @@ func TestScanLERange(t *testing.T) {
 
 	entries, err := store.Scan(&Range{
 		maxKey: NewPoint(Key{2, 2, 2}),
+	})
+	assert.NoError(t, err)
+	// Check length of slice
+	assert.Len(t, entries, 3)
+}
+
+
+func TestScanLERange4D(t *testing.T) {
+	store, err := NewKVStore(&KVStoreOptions{directory: STOREPATH, size: STORESIZE})
+	assert.NoError(t, err)
+	// Add a key first
+	oldData := RandStringBytes(10)
+
+	// create and store points
+	point1 := NewPoint(Key{0, 0, 0, 0})
+	point2 := NewPoint(Key{1, 1, 1, 1})
+	point3 := NewPoint(Key{2, 2, 2, 1})
+	point4 := NewPoint(Key{2, 3, 2, 2})
+	point5 := NewPoint(Key{3, 3, 3, 3})
+
+	assert.NoError(t, store.Put(&point1, oldData))
+	assert.NoError(t, store.Put(&point2, oldData))
+	assert.NoError(t, store.Put(&point3, oldData))
+	assert.NoError(t, store.Put(&point4, oldData))
+	assert.NoError(t, store.Put(&point5, oldData))
+
+	entries, err := store.Scan(&Range{
+		maxKey: NewPoint(Key{2, 2, 2, 2}),
 	})
 	assert.NoError(t, err)
 	// Check length of slice
@@ -286,7 +377,7 @@ func createValues(dimensions int, keyValuePairsCount int) (*KeyValuePair, *KeyVa
 	toSearch := keyValuePairs[0]
 	var nearest *KeyValuePair = nil
 
-	for _, kv := range keyValuePairs {
+	for _, kv := range keyValuePairs[1:] {
 		_, distance := toSearch.key.GetDistance(&kv.key)
 
 		if distance < min {
