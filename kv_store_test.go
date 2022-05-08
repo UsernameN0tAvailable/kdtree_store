@@ -7,6 +7,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"math/rand"
 	"os"
 	"testing"
@@ -19,6 +20,12 @@ const (
 	STORESIZE   = 2048
 	letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 )
+
+type KeyValuePair struct {
+	key Point
+	value [10]byte
+}
+
 
 func RandStringBytes(n int) [10]byte {
 	b := [10]byte{}
@@ -207,29 +214,93 @@ func TestScanLERange(t *testing.T) {
 }
 
 
-func TestGetNN(t *testing.T) {
+func TestGetNN3D(t *testing.T) {
 	store, err := NewKVStore(&KVStoreOptions{directory: STOREPATH, size: STORESIZE})
 	assert.NoError(t, err)
-	// Add a key first
-	data := RandStringBytes(10)
-	dataN := RandStringBytes(10)
 
-	// create and store points
-	point1 := NewPoint(Key{0, 0, 0})
-	point2 := NewPoint(Key{1, 1, 1})
-	point3 := NewPoint(Key{2, 2, 2})
-	point4 := NewPoint(Key{2, 3, 2})
-	point5 := NewPoint(Key{4, 4, 4})
+	toSearch, toFind, toStore := createValues(3, 50) // 4D and 50 values stored
 
-	assert.NoError(t, store.Put(&point1, data))
-	assert.NoError(t, store.Put(&point2, data))
-	assert.NoError(t, store.Put(&point3, data))
-	assert.NoError(t, store.Put(&point4, dataN))
-	assert.NoError(t, store.Put(&point5, data))
+	for _, kv := range toStore {
+		assert.NoError(t, store.Put(&kv.key, kv.value))
+	}
 
-	searchedPoint := NewPoint(Key{3, 3, 3})
-
-	if result, err := store.GetNN(&searchedPoint); assert.NoError(t, err) {
-		assert.Equal(t, dataN, result)
+	if result, err := store.GetNN(&toSearch.key); assert.NoError(t, err) {
+		assert.Equal(t, toFind.value, result)
 	}
 }
+
+
+
+func TestGetNN2D(t *testing.T) {
+	store, err := NewKVStore(&KVStoreOptions{directory: STOREPATH, size: STORESIZE})
+	assert.NoError(t, err)
+
+	toSearch, toFind, toStore := createValues(4, 20) // 4D and 20 values stored
+
+	for _, kv := range toStore {
+		assert.NoError(t, store.Put(&kv.key, kv.value))
+	}
+
+	if result, err := store.GetNN(&toSearch.key); assert.NoError(t, err) {
+		assert.Equal(t, toFind.value, result)
+	}
+}
+
+
+func TestGetNN10D(t *testing.T) {
+	store, err := NewKVStore(&KVStoreOptions{directory: STOREPATH, size: STORESIZE})
+	assert.NoError(t, err)
+
+	toSearch, toFind, toStore := createValues(10, 100) // 4D and 50 values stored
+
+	for _, kv := range toStore {
+		assert.NoError(t, store.Put(&kv.key, kv.value))
+	}
+
+	if result, err := store.GetNN(&toSearch.key); assert.NoError(t, err) {
+		assert.Equal(t, toFind.value, result)
+	}
+}
+
+
+// create values for different dimensions
+// first return value is the value to search
+// second is the nearest neighbour
+func createValues(dimensions int, keyValuePairsCount int) (*KeyValuePair, *KeyValuePair, []KeyValuePair) {
+
+	keyValuePairs := make([]KeyValuePair, keyValuePairsCount)
+
+	for i := 0; i < keyValuePairsCount; i++ {
+		data := RandStringBytes(10)
+		key := make(Key, dimensions)
+
+		for d := 0; d < dimensions; d++ {
+			key[d] = randomUint64()
+		}
+
+		keyValuePairs[i] = KeyValuePair{key: NewPoint(key), value: data}
+	}
+
+	min := math.MaxFloat64
+
+	toSearch := keyValuePairs[0]
+	var nearest *KeyValuePair = nil
+
+	for _, kv := range keyValuePairs {
+		_, distance := toSearch.key.GetDistance(&kv.key)
+
+		if distance < min {
+			min = distance
+			nearest = &kv
+		}
+	}
+
+	return &toSearch, nearest, keyValuePairs[1:]
+}
+
+func randomUint64() uint64 {
+    return uint64(rand.Uint32())<<32 + uint64(rand.Uint32())
+}
+
+
+
