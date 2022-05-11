@@ -5,15 +5,14 @@ Author: Tobias Famos & Mattia Pedrazzi
 
 package main
 
-import (
-	"path/filepath"
-)
+type StorableType interface {
+	string 
+}
 
 
 type KVStoreOptions struct {
 	kSize int
-	directory string
-	size      int
+	size  int
 }
 
 type Range struct {
@@ -21,68 +20,61 @@ type Range struct {
 	maxKey Point
 }
 
-type KVStoreManager interface {
-	NewKVStore(options *KVStoreOptions) (KVStore, error)
-}
-
-type KVStore interface {
-	Open() error
-	Close() error
+type KVStore [T StorableType] interface {
+	Put(key *Point, value T) error
+	Get(key *Point) ([]T, error) // exact match query and partial matches
 	Delete() error 
-	GetNN(key *Point) ([10]byte, error) // nearest neighbour
-	Get(key *Point) ([10]byte, error)
-	Put(key *Point, value [10]byte) error
-	Upsert(key *Point, value [10]byte) error
-	Scan(options *Range) ([][10]byte, error)
+	Scan(options *Range) ([]T, error) // range query
+	GetNN(key *Point) (T, error) // nearest neighbour query
+	Upsert(key *Point, value T) error
 }
 
-type MockedKVStore struct {
+type KVStoreMock[T StorableType] struct {
 	kSize int
-	filepath string
 	size     int
 	// TODO
         // tree KDTree	
 }
 
-func NewKVStore(options *KVStoreOptions) (KVStore, error) {
+func NewKVStore[T StorableType](options *KVStoreOptions) (KVStore[T], error) {
 	if options.size == 0 {
 		options.size = 2048
 	}
-	return &MockedKVStore{
+
+	return &KVStoreMock[T]{
 		kSize: options.kSize,
-		filepath: filepath.Dir(options.directory),
-		size:     options.size,
+		size: options.size,
 	}, nil
 }
 
-func (k *MockedKVStore) Open() error {
+func (k *KVStoreMock[T]) Open() error {
 	return nil
 }
 
-func (k *MockedKVStore) Close() error {
+func (k *KVStoreMock[T]) Close() error {
 	return nil
 }
 
-func (k *MockedKVStore) Delete() error {
+func (k *KVStoreMock[T]) Delete() error {
 	return nil
 }
 
-func (k *MockedKVStore) Get(key *Point) ([10]byte, error) {
-	return [10]byte{}, nil
+func (k *KVStoreMock[T]) Get(key *Point) ([]T, error) {
+	return make([]T, 0), nil
 }
 
-func (k *MockedKVStore) GetNN(key *Point) ([10]byte, error) {
-	return [10]byte{}, nil
+func (k *KVStoreMock[T]) GetNN(key *Point) (T, error) {
+	return "", nil
 }
 
-func (k *MockedKVStore) Put(key *Point, value [10]byte) error {
+func (k *KVStoreMock[T]) Put(key *Point, value T) error {
 	return nil
 }
 
-func (k *MockedKVStore) Upsert(key *Point, value [10]byte) error {
+func (k *KVStoreMock[T]) Upsert(key *Point, value T) error {
 	return nil
 }
 
-func (k *MockedKVStore) Scan(*Range) ([][10]byte, error) {
-	return make([][10]byte, 0), nil
+func (k *KVStoreMock[T]) Scan(*Range) ([]T, error) {
+	return make([]T, 0), nil
 }
