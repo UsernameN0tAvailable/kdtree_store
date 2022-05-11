@@ -45,7 +45,7 @@ func TestPutKey(t *testing.T) {
 	assert.NoError(t, err)
 	data := RandString()
 
-	point := NewPoint(Key{0, 0, 0})
+	point := NewPoint(Key{UInt64(0), UInt64(0), UInt64(0)})
 	assert.NoError(t, store.Put(&point  , data))
 }
 
@@ -54,7 +54,7 @@ func TestGetKey(t *testing.T) {
 	assert.NoError(t, err)
 	data := RandString()
 
-	point := NewPoint(Key{0,0,0})
+	point := NewPoint(Key{UInt64(0),UInt64(0),UInt64(0)})
 
 	assert.NoError(t, store.Put(&point, data))
 
@@ -69,7 +69,7 @@ func TestUpsertKey(t *testing.T) {
 	store, err := NewKVStore[string](&KVStoreOptions{size: STORESIZE})
 	assert.NoError(t, err)
 
-	point := NewPoint(Key{0, 0, 0})
+	point := NewPoint(Key{UInt64(0), UInt64(0), UInt64(0)})
 
 	// Add a key first
 	oldData := RandString()
@@ -91,22 +91,22 @@ func TestScanRange3D(t *testing.T) {
 	oldData := RandString()
 
 	// create and store points
-	point_1 := NewPoint(Key{0, 0, 0})
-	point_2 := NewPoint(Key{1, 1, 1})
-	point_3 := NewPoint(Key{2, 2, 2})
-	point_4 := NewPoint(Key{2, 3, 2})
-	point_5 := NewPoint(Key{3, 3, 3})
+	point1 := NewPoint(Key{UInt64(0), UInt64(0), UInt64(0)})
+	point2 := NewPoint(Key{UInt64(1), UInt64(1), UInt64(1)})
+	point3 := NewPoint(Key{UInt64(2), UInt64(2), UInt64(2)})
+	point4 := NewPoint(Key{UInt64(2), UInt64(3), UInt64(2)})
+	point5 := NewPoint(Key{UInt64(3), UInt64(3), UInt64(3)})
 
-	assert.NoError(t, store.Put(&point_1, oldData))
-	assert.NoError(t, store.Put(&point_2, oldData))
-	assert.NoError(t, store.Put(&point_3, oldData))
-	assert.NoError(t, store.Put(&point_4, oldData))
-	assert.NoError(t, store.Put(&point_5, oldData))
+	assert.NoError(t, store.Put(&point1, oldData))
+	assert.NoError(t, store.Put(&point2, oldData))
+	assert.NoError(t, store.Put(&point3, oldData))
+	assert.NoError(t, store.Put(&point4, oldData))
+	assert.NoError(t, store.Put(&point5, oldData))
 
 
 	entries, err := store.Scan(&Range{
-		minKey: NewPoint(Key{1, 1, 1}),
-		maxKey: NewPoint(Key{3, 3, 3}),
+		minKey: NewPoint(Key{UInt64(1), UInt64(1), UInt64(1)}),
+		maxKey: NewPoint(Key{UInt64(3), UInt64(3), UInt64(3)}),
 	})
 	assert.NoError(t, err)
 	// Check length of slice
@@ -120,22 +120,22 @@ func TestScanRange4D(t *testing.T) {
 	oldData := RandString()
 
 	// create and store points
-	point_1 := NewPoint(Key{0, 0, 0, 0})
-	point_2 := NewPoint(Key{1, 1, 1, 1})
-	point_3 := NewPoint(Key{2, 2, 2, 2})
-	point_4 := NewPoint(Key{2, 3, 2, 2})
-	point_5 := NewPoint(Key{3, 3, 3, 3})
+	point1 := NewPoint(Key{UInt64(0), UInt64(0), UInt64(0), UInt64(0)})
+	point2 := NewPoint(Key{UInt64(1), UInt64(1), UInt64(1), UInt64(1)})
+	point3 := NewPoint(Key{UInt64(2), UInt64(2), UInt64(2), UInt64(2)})
+	point4 := NewPoint(Key{UInt64(2), UInt64(3), UInt64(2), UInt64(2)})
+	point5 := NewPoint(Key{UInt64(3), UInt64(3), UInt64(3), UInt64(3)})
 
-	assert.NoError(t, store.Put(&point_1, oldData))
-	assert.NoError(t, store.Put(&point_2, oldData))
-	assert.NoError(t, store.Put(&point_3, oldData))
-	assert.NoError(t, store.Put(&point_4, oldData))
-	assert.NoError(t, store.Put(&point_5, oldData))
+	assert.NoError(t, store.Put(&point1, oldData))
+	assert.NoError(t, store.Put(&point2, oldData))
+	assert.NoError(t, store.Put(&point3, oldData))
+	assert.NoError(t, store.Put(&point4, oldData))
+	assert.NoError(t, store.Put(&point5, oldData))
 
 
 	entries, err := store.Scan(&Range{
-		minKey: NewPoint(Key{1, 1, 1, 1}),
-		maxKey: NewPoint(Key{3, 3, 3, 3}),
+		minKey: NewPoint(Key{UInt64(1), UInt64(1), UInt64(1), UInt64(1)}),
+		maxKey: NewPoint(Key{UInt64(3), UInt64(3), UInt64(3), UInt64(3)}),
 	})
 	assert.NoError(t, err)
 	// Check length of slice
@@ -148,20 +148,22 @@ func TestScanGTRange3D(t *testing.T) {
 	// Add a key first
 	oldData := RandString()
 	// create and store points
-	point_1 := NewPoint(Key{0, 0, 0})
-	point_2 := NewPoint(Key{1, 1, 1})
-	point_3 := NewPoint(Key{2, 2, 2})
-	point_4 := NewPoint(Key{2, 3, 2})
-	point_5 := NewPoint(Key{3, 3, 3})
 
-	assert.NoError(t, store.Put(&point_1, oldData))
-	assert.NoError(t, store.Put(&point_2, oldData))
-	assert.NoError(t, store.Put(&point_3, oldData))
-	assert.NoError(t, store.Put(&point_4, oldData))
-	assert.NoError(t, store.Put(&point_5, oldData))
+	// create and store points
+	point1 := NewPoint(Key{UInt64(0), UInt64(0), UInt64(0)})
+	point2 := NewPoint(Key{UInt64(1), UInt64(1), UInt64(1)})
+	point3 := NewPoint(Key{UInt64(2), UInt64(2), UInt64(2)})
+	point4 := NewPoint(Key{UInt64(2), UInt64(3), UInt64(2)})
+	point5 := NewPoint(Key{UInt64(3), UInt64(3), UInt64(3)})
+
+	assert.NoError(t, store.Put(&point1, oldData))
+	assert.NoError(t, store.Put(&point2, oldData))
+	assert.NoError(t, store.Put(&point3, oldData))
+	assert.NoError(t, store.Put(&point4, oldData))
+	assert.NoError(t, store.Put(&point5, oldData))
 
 	r := Range{
-		minKey: NewPoint(Key{2, 2, 2}),
+		minKey: NewPoint(Key{UInt64(2), UInt64(2), UInt64(2)}),
 	}
 
 	fmt.Println(r)
@@ -181,20 +183,20 @@ func TestScanGTRange4D(t *testing.T) {
 	oldData := RandString()
 
 	// create and store points
-	point_1 := NewPoint(Key{0, 0, 0, 0})
-	point_2 := NewPoint(Key{1, 1, 1, 1})
-	point_3 := NewPoint(Key{2, 2, 2, 2})
-	point_4 := NewPoint(Key{2, 3, 2, 2})
-	point_5 := NewPoint(Key{3, 3, 3, 3})
+	point1 := NewPoint(Key{UInt64(0), UInt64(0), UInt64(0), UInt64(0)})
+	point2 := NewPoint(Key{UInt64(1), UInt64(1), UInt64(1), UInt64(1)})
+	point3 := NewPoint(Key{UInt64(2), UInt64(2), UInt64(2), UInt64(2)})
+	point4 := NewPoint(Key{UInt64(2), UInt64(3), UInt64(2), UInt64(2)})
+	point5 := NewPoint(Key{UInt64(3), UInt64(3), UInt64(3), UInt64(3)})
 
-	assert.NoError(t, store.Put(&point_1, oldData))
-	assert.NoError(t, store.Put(&point_2, oldData))
-	assert.NoError(t, store.Put(&point_3, oldData))
-	assert.NoError(t, store.Put(&point_4, oldData))
-	assert.NoError(t, store.Put(&point_5, oldData))
+	assert.NoError(t, store.Put(&point1, oldData))
+	assert.NoError(t, store.Put(&point2, oldData))
+	assert.NoError(t, store.Put(&point3, oldData))
+	assert.NoError(t, store.Put(&point4, oldData))
+	assert.NoError(t, store.Put(&point5, oldData))
 
 	r := Range{
-		minKey: NewPoint(Key{2, 2, 2, 2}),
+		minKey: NewPoint(Key{UInt64(2), UInt64(2), UInt64(2), UInt64(2)}),
 	}
 
 	fmt.Println(r)
@@ -214,11 +216,11 @@ func TestScanLERange3D(t *testing.T) {
 	oldData := RandString()
 
 	// create and store points
-	point1 := NewPoint(Key{0, 0, 0})
-	point2 := NewPoint(Key{1, 1, 1})
-	point3 := NewPoint(Key{2, 2, 2})
-	point4 := NewPoint(Key{2, 3, 2})
-	point5 := NewPoint(Key{3, 3, 3})
+	point1 := NewPoint(Key{UInt64(0), UInt64(0), UInt64(0)})
+	point2 := NewPoint(Key{UInt64(1), UInt64(1), UInt64(1)})
+	point3 := NewPoint(Key{UInt64(2), UInt64(2), UInt64(2)})
+	point4 := NewPoint(Key{UInt64(2), UInt64(3), UInt64(2)})
+	point5 := NewPoint(Key{UInt64(3), UInt64(3), UInt64(3)})
 
 	assert.NoError(t, store.Put(&point1, oldData))
 	assert.NoError(t, store.Put(&point2, oldData))
@@ -226,9 +228,12 @@ func TestScanLERange3D(t *testing.T) {
 	assert.NoError(t, store.Put(&point4, oldData))
 	assert.NoError(t, store.Put(&point5, oldData))
 
-	entries, err := store.Scan(&Range{
-		maxKey: NewPoint(Key{2, 2, 2}),
-	})
+	r := Range{
+		minKey: NewPoint(Key{UInt64(2), UInt64(2), UInt64(2)}),
+	}
+
+	entries, err := store.Scan(&r)
+
 	assert.NoError(t, err)
 	// Check length of slice
 	assert.Len(t, entries, 3)
@@ -241,11 +246,11 @@ func TestScanLERange4D(t *testing.T) {
 	oldData := RandString()
 
 	// create and store points
-	point1 := NewPoint(Key{0, 0, 0, 0})
-	point2 := NewPoint(Key{1, 1, 1, 1})
-	point3 := NewPoint(Key{2, 2, 2, 1})
-	point4 := NewPoint(Key{2, 3, 2, 2})
-	point5 := NewPoint(Key{3, 3, 3, 3})
+	point1 := NewPoint(Key{UInt64(0), UInt64(0), UInt64(0), UInt64(0)})
+	point2 := NewPoint(Key{UInt64(1), UInt64(1), UInt64(1), UInt64(1)})
+	point3 := NewPoint(Key{UInt64(2), UInt64(2), UInt64(2), UInt64(2)})
+	point4 := NewPoint(Key{UInt64(2), UInt64(3), UInt64(2), UInt64(2)})
+	point5 := NewPoint(Key{UInt64(3), UInt64(3), UInt64(3), UInt64(3)})
 
 	assert.NoError(t, store.Put(&point1, oldData))
 	assert.NoError(t, store.Put(&point2, oldData))
@@ -254,8 +259,9 @@ func TestScanLERange4D(t *testing.T) {
 	assert.NoError(t, store.Put(&point5, oldData))
 
 	entries, err := store.Scan(&Range{
-		maxKey: NewPoint(Key{2, 2, 2, 2}),
+		maxKey: NewPoint(Key{UInt64(2), UInt64(2), UInt64(2), UInt64(2)}),
 	})
+
 	assert.NoError(t, err)
 	// Check length of slice
 	assert.Len(t, entries, 3)
@@ -269,11 +275,11 @@ func TestPartialGet4D(t *testing.T) {
 	oldData := RandString()
 
 	// create and store points
-	point1 := NewPoint(Key{0, 0, 0, 0})
-	point2 := NewPoint(Key{1, 1, 1, 1})
-	point3 := NewPoint(Key{2, 2, 2, 1})
-	point4 := NewPoint(Key{2, 3, 2, 2})
-	point5 := NewPoint(Key{3, 3, 3, 3})
+	point1 := NewPoint(Key{UInt64(0), UInt64(0), UInt64(0), UInt64(0)})
+	point2 := NewPoint(Key{UInt64(1), UInt64(1), UInt64(1), UInt64(1)})
+	point3 := NewPoint(Key{UInt64(2), UInt64(2), UInt64(2), UInt64(2)})
+	point4 := NewPoint(Key{UInt64(2), UInt64(2), UInt64(2), UInt64(2)})
+	point5 := NewPoint(Key{UInt64(3), UInt64(3), UInt64(3), UInt64(3)})
 
 	assert.NoError(t, store.Put(&point1, oldData))
 	assert.NoError(t, store.Put(&point2, oldData))
@@ -281,7 +287,7 @@ func TestPartialGet4D(t *testing.T) {
 	assert.NoError(t, store.Put(&point4, oldData))
 	assert.NoError(t, store.Put(&point5, oldData))
 
-	searchPoint := NewPoint(Key{2, None, 2, None})
+	searchPoint := NewPoint(Key{UInt64(2), None(), UInt64(2), None()})
 
 	entries, err := store.Get(&searchPoint)
 
@@ -298,11 +304,11 @@ func TestPartialGet3D(t *testing.T) {
 	oldData := RandString()
 
 	// create and store points
-	point1 := NewPoint(Key{0, 0, 0})
-	point2 := NewPoint(Key{1, 1, 1})
-	point3 := NewPoint(Key{1, 2, 2})
-	point4 := NewPoint(Key{2, 3, 2})
-	point5 := NewPoint(Key{1, 3, 3})
+	point1 := NewPoint(Key{UInt64(0), UInt64(0), UInt64(0)})
+	point2 := NewPoint(Key{UInt64(1), UInt64(1), UInt64(1)})
+	point3 := NewPoint(Key{UInt64(1), UInt64(2), UInt64(2)})
+	point4 := NewPoint(Key{UInt64(2), UInt64(3), UInt64(2)})
+	point5 := NewPoint(Key{UInt64(1), UInt64(3), UInt64(3)})
 
 	assert.NoError(t, store.Put(&point1, oldData))
 	assert.NoError(t, store.Put(&point2, oldData))
@@ -310,7 +316,7 @@ func TestPartialGet3D(t *testing.T) {
 	assert.NoError(t, store.Put(&point4, oldData))
 	assert.NoError(t, store.Put(&point5, oldData))
 
-	searchPoint := NewPoint(Key{1, None, None, None})
+	searchPoint := NewPoint(Key{UInt64(1), None(), None(), None()})
 
 	entries, err := store.Get(&searchPoint)
 
@@ -381,7 +387,7 @@ func createValues(dimensions int, keyValuePairsCount int) (*KeyValuePair[string]
 		key := make(Key, dimensions)
 
 		for d := 0; d < dimensions; d++ {
-			key[d] = randomUint64()
+			key[d] = UInt64(randomUint64())
 		}
 
 		keyValuePairs[i] = KeyValuePair[string]{key: NewPoint(key), value: data}
