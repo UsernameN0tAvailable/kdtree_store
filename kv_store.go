@@ -11,8 +11,8 @@ type StorableType interface {
 
 
 type KVStoreOptions struct {
-	kSize int
-	size  int
+	kSize int // key size
+	size  int // Store size
 }
 
 type Range struct {
