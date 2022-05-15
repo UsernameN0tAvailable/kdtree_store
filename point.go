@@ -20,6 +20,36 @@ func NewPoint(c Key) Point {
 	return Point{coords: c}
 }
 
+func (p *Point) IsEqual(pc *Point) bool {
+
+	if p.GetSize() != pc.GetSize() {
+		return false
+	}
+
+	for i, k := range p.coords {
+
+		_, p1k := pc.GetKeyAt(i)
+
+		if p1k.IsSome != k.IsSome || p1k.Value != k.Value {
+			return false
+		}
+	}
+
+	return true
+}
+
+func (p *Point) IsPartial() bool {
+
+	for _, k := range p.coords {
+		if !k.IsSome {
+			return false
+		}
+
+	}
+
+	return false
+}
+
 
 func (p *Point) GetSize() int {
 	return len(p.coords)

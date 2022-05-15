@@ -23,7 +23,7 @@ type Range struct {
 type KVStore [T StorableType] interface {
 	Put(key *Point, value T) error
 	Get(key *Point) ([]T, error) // exact match query and partial matches
-	Delete() error 
+	Delete(key * Point) error 
 	Scan(options *Range) ([]T, error) // range query
 	GetNN(key *Point) (T, error) // nearest neighbour query
 	Upsert(key *Point, value T) error
@@ -55,7 +55,7 @@ func (k *KVStoreMock[T]) Close() error {
 	return nil
 }
 
-func (k *KVStoreMock[T]) Delete() error {
+func (k *KVStoreMock[T]) Delete(key *Point) error {
 	return nil
 }
 
