@@ -86,8 +86,14 @@ func (t * KDTree[T]) Upsert(key *Point, value T) error {
 	return nil
 }
 
-func NewKDTree[T StorableType](size int) KDTree[T] {	
-	return KDTree[T]{kSize: size, root: nil}
+func NewKDTree[T StorableType](size int) (*KDTree[T], error) {	
+
+
+	if size < 1 {
+		return nil, errors.New("key size has to be at least 1")
+	}
+	
+	return &KDTree[T]{kSize: size, root: nil}, nil
 }
 
 

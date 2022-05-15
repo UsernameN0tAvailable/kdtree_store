@@ -41,8 +41,8 @@ func TestNewKVStor(t *testing.T) {
 }
 
 func TestPutKey(t *testing.T) {
-	store := NewKDTree[string](3)
-	//assert.NoError(t, err)
+	store, err := NewKDTree[string](3)
+	assert.NoError(t, err)
 	data := RandString()
 
 	point := NewPoint(Key{UInt64(0), UInt64(0), UInt64(0)})
@@ -50,8 +50,8 @@ func TestPutKey(t *testing.T) {
 }
 
 func TestPutWrongKey(t *testing.T) {
-	store := NewKDTree[string](4)
-	//assert.NoError(t, err)
+	store, err := NewKDTree[string](4)
+	assert.NoError(t, err)
 	data := RandString()
 
 	point := NewPoint(Key{UInt64(0), UInt64(0), UInt64(0)})
@@ -61,7 +61,8 @@ func TestPutWrongKey(t *testing.T) {
 
 
 func TestPutMultiples(t *testing.T) {
-	store := NewKDTree[string](5)
+	store, err := NewKDTree[string](5)
+	assert.NoError(t, err)
 
 	for i := 0; i < 50; i++ {
 		data := RandString()
@@ -79,7 +80,8 @@ func TestPutMultiples(t *testing.T) {
 	}
 
 	func TestGetKey(t *testing.T) {
-		store := NewKDTree[string](3)
+		store, err := NewKDTree[string](3)
+		assert.NoError(t, err)
 		data := RandString()
 
 		point := NewPoint(Key{UInt64(0),UInt64(0),UInt64(0)})
@@ -96,7 +98,8 @@ func TestPutMultiples(t *testing.T) {
 
 	func TestGetKeyWithMultiples(t *testing.T) {
 
-		store := NewKDTree[string](10)
+		store, err := NewKDTree[string](10)
+		assert.NoError(t, err)
 
 		var keyToSearch *Point = nil
 		valueToFind := ""
