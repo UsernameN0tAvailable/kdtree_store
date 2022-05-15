@@ -4,7 +4,6 @@ import (
 	"errors"
 )
 
-
 type Node[T StorableType] struct {
 	Key Point
 	value T
@@ -24,6 +23,14 @@ func NewNode[T StorableType](key *Point, value T) (error, *Node[T]) {
 
 	return nil, &Node[T]{Key: *key, value: value, Left: nil, Right: nil}
 
+}
+
+func (n *Node[T]) IsLeftChild(nc *Node[T]) bool {
+	return n.Key.IsEqual(&n.Left.Key)
+}
+
+func (n *Node[T]) IsLeaf() bool {
+	return n.Left == nil && n.Right == nil
 }
 
 func (n *Node[T]) GetValue() T {
