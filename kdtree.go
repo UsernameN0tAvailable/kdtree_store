@@ -4,12 +4,14 @@ import (
 	"errors"
 )
 
-type KDTree[T StorableType] struct {
+type Value = [10]byte
+
+type KDTree struct {
 	kSize int
-	root *Node[T]
+	root *Node
 }
 
-func (t * KDTree[T]) Put(key *Point, value T) error {
+func (t * KDTree) Put(key *Point, value Value) error {
 
 	if key.GetSize() != t.kSize {
 		return errors.New("Key and Tree have different sizes!")
@@ -52,7 +54,7 @@ func (t * KDTree[T]) Put(key *Point, value T) error {
 	}
 }
 
-func (t * KDTree[T]) Get(key *Point) ([]T, error)  {
+func (t * KDTree) Get(key *Point) ([]Value, error)  {
 
 	if key.IsPartial() {
 		return t.partialSearchQuey(key)
@@ -60,13 +62,13 @@ func (t * KDTree[T]) Get(key *Point) ([]T, error)  {
 
 	_,_, node := t.searchQuery(key)
 	if node == nil {
-		return make([]T, 0, 0), errors.New("Couldn't find key")
+		return make([]Value, 0, 0), errors.New("Couldn't find key")
 	}
 
-	return []T{node.GetValue()}, nil
+	return []Value{node.GetValue()}, nil
 }
 
-func (t * KDTree[T]) Delete(key * Point) error  {
+func (t * KDTree) Delete(key * Point) error  {
 
 	depth, parent, node := t.searchQuery(key)
 
@@ -79,7 +81,7 @@ func (t * KDTree[T]) Delete(key * Point) error  {
 	return nil
 }
 
-func (t * KDTree[T]) deleteNode(parent *Node[T], node *Node[T], depth int) {
+func (t * KDTree) deleteNode(parent *Node, node *Node, depth int) {
 
 	if node == nil {
 		return
@@ -127,13 +129,13 @@ func (t * KDTree[T]) deleteNode(parent *Node[T], node *Node[T], depth int) {
 	}
 }
 
-func (t * KDTree[T]) searchMinimum(n * Node[T], keyIndex int, depthParam int) (int, *Node[T], *Node[T]) {
+func (t * KDTree) searchMinimum(n * Node, keyIndex int, depthParam int) (int, *Node, *Node) {
 
 	var (
-		parentLeft *Node[T] = nil
-		parentRight *Node[T] = nil
-		nodeLeft *Node[T] =  nil
-		nodeRight *Node[T] = nil
+		parentLeft *Node = nil
+		parentRight *Node = nil
+		nodeLeft *Node =  nil
+		nodeRight *Node = nil
 		depthLeft int = 0
 		depthRight int = 0
 
@@ -164,30 +166,30 @@ func (t * KDTree[T]) searchMinimum(n * Node[T], keyIndex int, depthParam int) (i
 }
 
 
-func (t * KDTree[T]) Scan(options *Range) ([]T, error)  {
-	return make([]T, 0), nil
+func (t * KDTree) Scan(options *Range) ([]Value, error)  {
+	return make([]Value, 0), nil
 }
 
-func (t * KDTree[T]) GetNN(key *Point) (T, error) {
-	return "", nil
+func (t * KDTree) GetNN(key *Point) (Value, error) {
+	return *new(Value), nil
 }
 
-func (t * KDTree[T]) Upsert(key *Point, value T) error {
+func (t * KDTree) Upsert(key *Point, value Value) error {
 	return nil
 }
 
-func NewKDTree[T StorableType](size int) (*KDTree[T], error) {	
+func NewKDTree[T StorableType](size int) (*KDTree, error) {	
 	if size < 1 {
 		return nil, errors.New("key size has to be at least 1")
 	}
 	
-	return &KDTree[T]{kSize: size, root: nil}, nil
+	return &KDTree{kSize: size, root: nil}, nil
 }
 
 // returns found Node and parent of found Node
-func (t *KDTree[T]) searchQuery(key *Point) (int, *Node[T], *Node[T]){
+func (t *KDTree) searchQuery(key *Point) (int, *Node, *Node){
 
-	var parentNode *Node[T] = nil
+	var parentNode *Node = nil
 	currentNode := t.root
 
 
@@ -221,18 +223,18 @@ func (t *KDTree[T]) searchQuery(key *Point) (int, *Node[T], *Node[T]){
 	}
 }
 
-func (t *KDTree[T]) partialSearchQuey(k *Point) ([]T, error) {
-	return make([]T, 0, 0), nil
+func (t *KDTree) partialSearchQuey(k *Point) ([]Value, error) {
+	return make([]Value, 0, 0), nil
 }
 
 
-func (t*KDTree[T]) GetNodesCount() int {
+func (t*KDTree) GetNodesCount() int {
 
 	return countSubTreesNodes(t.root) + 1
 }
 
 
-func countSubTreesNodes[T StorableType](n *Node[T]) int {
+func countSubTreesNodes(n *Node) int {
 
 	count := 0
 

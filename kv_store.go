@@ -20,61 +20,59 @@ type Range struct {
 	maxKey Point
 }
 
-type KVStore [T StorableType] interface {
-	Put(key *Point, value T) error
-	Get(key *Point) ([]T, error) // exact match query and partial matches
+type KVStore interface {
+	Put(key *Point, value Value) error
+	Get(key *Point) ([]Value, error) // exact match query and partial matches
 	Delete(key * Point) error 
-	Scan(options *Range) ([]T, error) // range query
-	GetNN(key *Point) (T, error) // nearest neighbour query
-	Upsert(key *Point, value T) error
+	Scan(options *Range) ([]Value, error) // range query
+	GetNN(key *Point) (Value, error) // nearest neighbour query
+	Upsert(key *Point, value Value) error
 }
 
-type KVStoreMock[T StorableType] struct {
+type KVStoreMock struct {
 	kSize int
 	size     int
-	// TODO
-        // tree KDTree	
 }
 
-func NewKVStore[T StorableType](options *KVStoreOptions) (KVStore[T], error) {
+func NewKVStore(options *KVStoreOptions) (KVStore, error) {
 	if options.size == 0 {
 		options.size = 2048
 	}
 
-	return &KVStoreMock[T]{
+	return &KVStoreMock{
 		kSize: options.kSize,
 		size: options.size,
 	}, nil
 }
 
-func (k *KVStoreMock[T]) Open() error {
+func (k *KVStoreMock) Open() error {
 	return nil
 }
 
-func (k *KVStoreMock[T]) Close() error {
+func (k *KVStoreMock) Close() error {
 	return nil
 }
 
-func (k *KVStoreMock[T]) Delete(key *Point) error {
+func (k *KVStoreMock) Delete(key *Point) error {
 	return nil
 }
 
-func (k *KVStoreMock[T]) Get(key *Point) ([]T, error) {
-	return make([]T, 0), nil
+func (k *KVStoreMock) Get(key *Point) ([]Value, error) {
+	return make([]Value, 0), nil
 }
 
-func (k *KVStoreMock[T]) GetNN(key *Point) (T, error) {
-	return "", nil
+func (k *KVStoreMock) GetNN(key *Point) (Value, error) {
+	return *new(Value), nil
 }
 
-func (k *KVStoreMock[T]) Put(key *Point, value T) error {
+func (k *KVStoreMock) Put(key *Point, value Value) error {
 	return nil
 }
 
-func (k *KVStoreMock[T]) Upsert(key *Point, value T) error {
+func (k *KVStoreMock) Upsert(key *Point, value Value) error {
 	return nil
 }
 
-func (k *KVStoreMock[T]) Scan(*Range) ([]T, error) {
-	return make([]T, 0), nil
+func (k *KVStoreMock) Scan(*Range) ([]Value, error) {
+	return make([]Value, 0), nil
 }

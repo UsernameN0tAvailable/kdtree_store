@@ -4,40 +4,39 @@ import (
 	"errors"
 )
 
-type Node[T StorableType] struct {
+type Node struct {
 	Key Point
-	value T
+	value Value
 
-	Left *Node[T]
-	Right *Node[T]
+	Left *Node
+	Right *Node
 }
 
 
 
-func NewNode[T StorableType](key *Point, value T) (error, *Node[T]) {
+func NewNode(key *Point, value Value) (error, *Node) {
 
 	if key.IsPartial() {
 		return errors.New("cannot store partial point"), nil
 	}
 
 
-	return nil, &Node[T]{Key: *key, value: value, Left: nil, Right: nil}
-
+	return nil, &Node{Key: *key, value: value, Left: nil, Right: nil}
 }
 
-func (n *Node[T]) IsLeftChild(nc *Node[T]) bool {
+func (n *Node) IsLeftChild(nc *Node) bool {
 	return n.Key.IsEqual(&n.Left.Key)
 }
 
-func (n *Node[T]) IsLeaf() bool {
+func (n *Node) IsLeaf() bool {
 	return n.Left == nil && n.Right == nil
 }
 
-func (n *Node[T]) GetValue() T {
+func (n *Node) GetValue() Value {
 	return n.value
 }
 
-func (n *Node[T]) KeyValueAt(i int) uint64 {
+func (n *Node) KeyValueAt(i int) uint64 {
 	// already know
 	// partial keys cannot
 	// be stored so we ignore error
