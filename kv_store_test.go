@@ -87,7 +87,7 @@ func TestGetKey(t *testing.T) {
 
 	if result, err := store.Get(&point); assert.NoError(t, err) {
 		assert.Len(t, result, 1)
-		assert.Equal(t, data, result)
+		assert.Equal(t, data, result[0])
 	}
 }
 
@@ -125,7 +125,7 @@ func TestGetKeyWithMultiples(t *testing.T) {
 
 	if result, err := store.Get(keyToSearch); assert.NoError(t, err) {
 		assert.Len(t, result, 1)
-		assert.Equal(t, valueToFind, result)
+		assert.Equal(t, valueToFind, result[0])
 	}
 }
 
@@ -208,6 +208,7 @@ func TestDeleteKeyWithMultiples(t *testing.T) {
 }
 
 func TestUpsertKey(t *testing.T) {
+	t.Skipf("Skipped , will be implement in Part 2")
 	store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 3})
 	assert.NoError(t, err)
 
@@ -227,6 +228,7 @@ func TestUpsertKey(t *testing.T) {
 }
 
 func TestScanRange3D(t *testing.T) {
+	t.Skipf("Skipped , will be implement in Part 2")
 	store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 3})
 	assert.NoError(t, err)
 	// Add a key first
@@ -255,6 +257,7 @@ func TestScanRange3D(t *testing.T) {
 }
 
 func TestScanRange4D(t *testing.T) {
+	t.Skipf("Skipped , will be implement in Part 2")
 	store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 4})
 	assert.NoError(t, err)
 	// Add a key first
@@ -283,6 +286,7 @@ func TestScanRange4D(t *testing.T) {
 }
 
 func TestScanGTRange3D(t *testing.T) {
+	t.Skipf("Skipped , will be implement in Part 2")
 	store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 3})
 	assert.NoError(t, err)
 	// Add a key first
@@ -316,6 +320,7 @@ func TestScanGTRange3D(t *testing.T) {
 }
 
 func TestScanGTRange4D(t *testing.T) {
+	t.Skipf("Skipped , will be implement in Part 2")
 	store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 4})
 	assert.NoError(t, err)
 	// Add a key first
@@ -348,6 +353,7 @@ func TestScanGTRange4D(t *testing.T) {
 }
 
 func TestScanLERange3D(t *testing.T) {
+	t.Skipf("Skipped , will be implement in Part 2")
 	store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 3})
 	assert.NoError(t, err)
 	// Add a key first
@@ -378,6 +384,7 @@ func TestScanLERange3D(t *testing.T) {
 }
 
 func TestScanLERange4D(t *testing.T) {
+	t.Skipf("Skipped , will be implement in Part 2")
 	store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 4})
 	assert.NoError(t, err)
 	// Add a key first
@@ -406,6 +413,7 @@ func TestScanLERange4D(t *testing.T) {
 }
 
 func TestPartialGet4D(t *testing.T) {
+	t.Skipf("Skipped , will be implement in Part 2")
 	store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 4})
 	assert.NoError(t, err)
 	// Add a key first
@@ -434,6 +442,7 @@ func TestPartialGet4D(t *testing.T) {
 }
 
 func TestPartialGet3D(t *testing.T) {
+	t.Skipf("Skipped , will be implement in Part 2")
 	store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 3})
 	assert.NoError(t, err)
 	// Add a key first
@@ -462,6 +471,7 @@ func TestPartialGet3D(t *testing.T) {
 }
 
 func TestGetNN3D(t *testing.T) {
+	t.Skipf("Skipped , will be implement in Part 2")
 	store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 3})
 	assert.NoError(t, err)
 
@@ -477,6 +487,7 @@ func TestGetNN3D(t *testing.T) {
 }
 
 func TestGetNN2D(t *testing.T) {
+	t.Skipf("Skipped , will be implement in Part 2")
 	store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 2})
 	assert.NoError(t, err)
 
@@ -492,6 +503,7 @@ func TestGetNN2D(t *testing.T) {
 }
 
 func TestGetNN10D(t *testing.T) {
+	t.Skipf("Skipped , will be implement in Part 2")
 	store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 10})
 	assert.NoError(t, err)
 
