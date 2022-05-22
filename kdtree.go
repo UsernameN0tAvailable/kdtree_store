@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 )
 
 type Value = [10]byte
@@ -149,7 +148,6 @@ func (t *KDTree) deleteNode(parent *Node, node *Node, depth int) {
 }
 
 func (t *KDTree) searchMinimum(n *Node, keyIndex int, depthParam int) (int, *Node, *Node) {
-	//TODO also keep track of the parent
 	var (
 		parentLeft  *Node = nil
 		parentRight *Node = nil
@@ -209,7 +207,6 @@ func getMin(node1 *Node, node2 *Node, node3 *Node, keyIndex int) *Node {
 	if node3.SmallerThan(node1, keyIndex) && node3.SmallerThan(node2, keyIndex) {
 		return node3
 	}
-	fmt.Println("ERRROR in comparing")
 	return nil
 }
 
