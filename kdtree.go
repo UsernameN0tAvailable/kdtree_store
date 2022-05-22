@@ -7,13 +7,13 @@ import (
 type Value = [10]byte
 
 type KDTree struct {
-	kSize int 
+	kSize   int
 	maxSize uint64
-	size uint64 // current size in bytes
-	root *Node
+	size    uint64 // current size in bytes
+	root    *Node
 }
 
-func (t * KDTree) Put(key *Point, value Value) error {
+func (t *KDTree) Put(key *Point, value Value) error {
 
 	if key.GetSize() != t.kSize {
 		return errors.New("Key and Tree have different sizes!")
@@ -33,7 +33,7 @@ func (t * KDTree) Put(key *Point, value Value) error {
 
 	currentNode := t.root
 
-	for depth := 0;; depth++  {
+	for depth := 0; ; depth++ {
 
 		keyIndex := depth % t.kSize
 
@@ -41,17 +41,17 @@ func (t * KDTree) Put(key *Point, value Value) error {
 			if currentNode.Right == nil {
 				currentNode.Right = node
 				t.size += node.GetByteSize()
-				return nil	
-			} 
+				return nil
+			}
 
-			currentNode = currentNode.Right	
+			currentNode = currentNode.Right
 
 		} else {
 			if currentNode.Left == nil {
 				currentNode.Left = node
 				t.size += node.GetByteSize()
-				return nil	
-			} 
+				return nil
+			}
 
 			currentNode = currentNode.Left
 
@@ -59,13 +59,13 @@ func (t * KDTree) Put(key *Point, value Value) error {
 	}
 }
 
-func (t * KDTree) Get(key *Point) ([]Value, error)  {
+func (t *KDTree) Get(key *Point) ([]Value, error) {
 
 	if key.IsPartial() {
 		return t.partialSearchQuey(key)
 	}
 
-	_,_, node := t.searchQuery(key)
+	_, _, node := t.searchQuery(key)
 	if node == nil {
 		return make([]Value, 0, 0), errors.New("Couldn't find key")
 	}
@@ -73,7 +73,7 @@ func (t * KDTree) Get(key *Point) ([]Value, error)  {
 	return []Value{node.GetValue()}, nil
 }
 
-func (t * KDTree) Delete(key * Point) error  {
+func (t *KDTree) Delete(key *Point) error {
 
 	depth, parent, node := t.searchQuery(key)
 
@@ -86,7 +86,7 @@ func (t * KDTree) Delete(key * Point) error  {
 	return nil
 }
 
-func (t * KDTree) deleteNode(parent *Node, node *Node, depth int) {
+func (t *KDTree) deleteNode(parent *Node, node *Node, depth int) {
 
 	if node == nil {
 		return
@@ -97,7 +97,7 @@ func (t * KDTree) deleteNode(parent *Node, node *Node, depth int) {
 			parent.Left = nil
 		} else {
 			parent.Right = nil
-		} 
+		}
 
 	} else if node.Right != nil {
 
@@ -107,12 +107,12 @@ func (t * KDTree) deleteNode(parent *Node, node *Node, depth int) {
 
 		if minNode != nil {
 
-		t.deleteNode(minParent, minNode, depth)
+			t.deleteNode(minParent, minNode, depth)
 
-		// put min at top
-		minNode.Right = node.Right
-		minNode.Left = node.Left
-	}
+			// put min at top
+			minNode.Right = node.Right
+			minNode.Left = node.Left
+		}
 
 	} else if node.Left != nil {
 
@@ -123,38 +123,37 @@ func (t * KDTree) deleteNode(parent *Node, node *Node, depth int) {
 
 		if minNode != nil {
 
-		t.deleteNode(minParent, minNode, depth)
+			t.deleteNode(minParent, minNode, depth)
 
-		// put min at top
-		minNode.Right = node.Right
-		minNode.Left = node.Left
+			// put min at top
+			minNode.Right = node.Right
+			minNode.Left = node.Left
 
-		// swap
-		refTmp := minParent.Left
-		minParent.Left = minParent.Right
-		minParent.Right = refTmp
-	}
+			// swap
+			refTmp := minParent.Left
+			minParent.Left = minParent.Right
+			minParent.Right = refTmp
+		}
 	}
 }
 
-func (t * KDTree) searchMinimum(n * Node, keyIndex int, depthParam int) (int, *Node, *Node) {
+func (t *KDTree) searchMinimum(n *Node, keyIndex int, depthParam int) (int, *Node, *Node) {
 
 	var (
-		parentLeft *Node = nil
+		parentLeft  *Node = nil
 		parentRight *Node = nil
-		nodeLeft *Node =  nil
-		nodeRight *Node = nil
-		depthLeft int = 0
-		depthRight int = 0
-
+		nodeLeft    *Node = nil
+		nodeRight   *Node = nil
+		depthLeft   int   = 0
+		depthRight  int   = 0
 	)
 
 	if n.Left != nil {
-		depthLeft, parentLeft, nodeLeft = t.searchMinimum(n.Left, keyIndex, depthParam + 1)
+		depthLeft, parentLeft, nodeLeft = t.searchMinimum(n.Left, keyIndex, depthParam+1)
 	}
 
 	if n.Right != nil {
-		depthRight, parentRight, nodeRight = t.searchMinimum(n.Right, keyIndex, depthParam + 1)
+		depthRight, parentRight, nodeRight = t.searchMinimum(n.Right, keyIndex, depthParam+1)
 	}
 
 	if nodeRight == nil && nodeLeft == nil {
@@ -169,27 +168,26 @@ func (t * KDTree) searchMinimum(n * Node, keyIndex int, depthParam int) (int, *N
 		return depthRight, parentRight, nodeRight
 	}
 
-	if  nodeLeft.KeyValueAt(keyIndex) < nodeRight.KeyValueAt(keyIndex) {
+	if nodeLeft.KeyValueAt(keyIndex) < nodeRight.KeyValueAt(keyIndex) {
 		return depthLeft, parentLeft, nodeLeft
 	}
 
-	return  depthRight, parentRight, nodeRight
+	return depthRight, parentRight, nodeRight
 }
 
-
-func (t * KDTree) Scan(options *Range) ([]Value, error)  {
+func (t *KDTree) Scan(options *Range) ([]Value, error) {
 	return make([]Value, 0), nil
 }
 
-func (t * KDTree) GetNN(key *Point) (Value, error) {
+func (t *KDTree) GetNN(key *Point) (Value, error) {
 	return *new(Value), nil
 }
 
-func (t * KDTree) Upsert(key *Point, value Value) error {
+func (t *KDTree) Upsert(key *Point, value Value) error {
 	return nil
 }
 
-func NewKDTree(keySize int, maxSize uint64) (*KDTree, error) {	
+func NewKDTree(keySize int, maxSize uint64) (*KDTree, error) {
 	if keySize < 1 {
 		return nil, errors.New("key size has to be at least 1")
 	}
@@ -198,13 +196,12 @@ func NewKDTree(keySize int, maxSize uint64) (*KDTree, error) {
 }
 
 // returns found Node and parent of found Node
-func (t *KDTree) searchQuery(key *Point) (int, *Node, *Node){
+func (t *KDTree) searchQuery(key *Point) (int, *Node, *Node) {
 
 	var parentNode *Node = nil
 	currentNode := t.root
 
-
-	for depth := 0;; depth++ {
+	for depth := 0; ; depth++ {
 
 		if currentNode.Key.IsEqual(key) {
 			return depth, parentNode, currentNode
@@ -212,7 +209,7 @@ func (t *KDTree) searchQuery(key *Point) (int, *Node, *Node){
 
 		keyIndex := depth % t.kSize
 
-		_,kv := key.GetKeyAt(keyIndex)
+		_, kv := key.GetKeyAt(keyIndex)
 
 		if currentNode.KeyValueAt(keyIndex) < kv.Value {
 			if currentNode.Right == nil {
@@ -238,28 +235,24 @@ func (t *KDTree) partialSearchQuey(k *Point) ([]Value, error) {
 	return make([]Value, 0, 0), nil
 }
 
-
-func (t*KDTree) GetNodesCount() int {
+func (t *KDTree) GetNodesCount() int {
 
 	return countSubTreesNodes(t.root) + 1
 }
-
 
 func countSubTreesNodes(n *Node) int {
 
 	count := 0
 
-	if n.Left != nil {		
-		count ++
+	if n.Left != nil {
+		count++
 		count += countSubTreesNodes(n.Left)
 	}
 
 	if n.Right != nil {
-		count ++
+		count++
 		count += countSubTreesNodes(n.Right)
 	}
 
 	return count
 }
-
-
