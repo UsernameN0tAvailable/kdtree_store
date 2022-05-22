@@ -7,7 +7,9 @@ import (
 type Value = [10]byte
 
 type KDTree struct {
-	kSize int
+	kSize int 
+	maxSize uint64
+	size uint64 // current size in bytes
 	root *Node
 }
 
@@ -25,6 +27,7 @@ func (t * KDTree) Put(key *Point, value Value) error {
 
 	if t.root == nil {
 		t.root = node
+		t.size += node.GetByteSize()
 		return nil
 	}
 
@@ -37,6 +40,7 @@ func (t * KDTree) Put(key *Point, value Value) error {
 		if currentNode.KeyValueAt(keyIndex) < node.KeyValueAt(keyIndex) {
 			if currentNode.Right == nil {
 				currentNode.Right = node
+				t.size += node.GetByteSize()
 				return nil	
 			} 
 
@@ -45,6 +49,7 @@ func (t * KDTree) Put(key *Point, value Value) error {
 		} else {
 			if currentNode.Left == nil {
 				currentNode.Left = node
+				t.size += node.GetByteSize()
 				return nil	
 			} 
 
@@ -178,12 +183,12 @@ func (t * KDTree) Upsert(key *Point, value Value) error {
 	return nil
 }
 
-func NewKDTree[T StorableType](size int) (*KDTree, error) {	
-	if size < 1 {
+func NewKDTree(keySize int, maxSize uint64) (*KDTree, error) {	
+	if keySize < 1 {
 		return nil, errors.New("key size has to be at least 1")
 	}
-	
-	return &KDTree{kSize: size, root: nil}, nil
+
+	return &KDTree{kSize: keySize, maxSize: maxSize, size: 4 * 8, root: nil}, nil
 }
 
 // returns found Node and parent of found Node

@@ -50,6 +50,10 @@ func (p *Point) IsPartial() bool {
 	return false
 }
 
+func (p *Point) GetByteSize() uint64 {
+	return uint64(len(p.coords)) * 12 + 10
+}
+
 
 func (p *Point) GetSize() int {
 	return len(p.coords)
@@ -85,7 +89,7 @@ func (p *Point) GetDistance(p_1 *Point) (error, float64) {
 	return nil, math.Sqrt(deltaSum)
 }
 
-
+// size is 12 bytes
 type OptionalUInt64 struct {
 	IsSome bool
 	Value uint64
@@ -98,5 +102,3 @@ func UInt64(value uint64) OptionalUInt64 {
 func None() OptionalUInt64 {
 	return OptionalUInt64{IsSome: false}
 }
-
-

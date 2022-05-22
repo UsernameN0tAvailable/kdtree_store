@@ -43,3 +43,9 @@ func (n *Node) KeyValueAt(i int) uint64 {
 	_, v := n.Key.GetKeyAt(i)
 	return v.Value
 }
+
+func (n *Node) GetByteSize() uint64 {
+	return n.Key.GetByteSize() + 10 + 8 + 8
+}
+
+

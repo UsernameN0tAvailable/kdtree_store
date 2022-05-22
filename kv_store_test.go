@@ -37,12 +37,12 @@ func RandString() Value  {
 }
 
 func TestNewKVStor(t *testing.T) {
-	_, err := NewKVStore(&KVStoreOptions{size: STORESIZE, kSize: 2})
+	_, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 2})
 	assert.NoError(t, err)
 }
 
 func TestPutKey(t *testing.T) {
-	store, err := NewKDTree(3)
+	store, err := NewKDTree(3, STORESIZE)
 	assert.NoError(t, err)
 	data := RandString()
 
@@ -51,7 +51,7 @@ func TestPutKey(t *testing.T) {
 }
 
 func TestPutWrongKey(t *testing.T) {
-	store, err := NewKDTree(4)
+	store, err := NewKDTree(4, STORESIZE)
 	assert.NoError(t, err)
 	data := RandString()
 
@@ -62,7 +62,7 @@ func TestPutWrongKey(t *testing.T) {
 
 
 func TestPutMultiples(t *testing.T) {
-	store, err := NewKDTree(5)
+	store, err := NewKDTree(5, STORESIZE)
 	assert.NoError(t, err)
 
 	for i := 0; i < 50; i++ {
@@ -80,7 +80,7 @@ func TestPutMultiples(t *testing.T) {
 		}
 	}
 	func TestGetKey(t *testing.T) {
-		store, err := NewKDTree(3)
+		store, err := NewKDTree(3, STORESIZE)
 		assert.NoError(t, err)
 		data := RandString()
 
@@ -98,7 +98,7 @@ func TestPutMultiples(t *testing.T) {
 
 	func TestGetKeyWithMultiples(t *testing.T) {
 
-		store, err := NewKDTree(10)
+		store, err := NewKDTree(10, STORESIZE)
 		assert.NoError(t, err)
 
 		var keyToSearch *Point = nil
@@ -137,7 +137,7 @@ func TestPutMultiples(t *testing.T) {
 
 	func TestDeleteKeyWithMultiples(t *testing.T) {
 
-		store, err := NewKDTree(10)
+		store, err := NewKDTree(10, STORESIZE)
 		assert.NoError(t, err)
 
 		var keyToDelete *Point = nil
@@ -179,7 +179,7 @@ func TestPutMultiples(t *testing.T) {
 
 
 		func TestUpsertKey(t *testing.T) {
-			store, err := NewKVStore(&KVStoreOptions{size: STORESIZE, kSize: 3})
+			store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 3})
 			assert.NoError(t, err)
 
 			point := NewPoint(Key{UInt64(0), UInt64(0), UInt64(0)})
@@ -197,7 +197,7 @@ func TestPutMultiples(t *testing.T) {
 			}	}
 
 			func TestScanRange3D(t *testing.T) {
-				store, err := NewKVStore(&KVStoreOptions{size: STORESIZE, kSize: 3})
+				store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 3})
 				assert.NoError(t, err)
 				// Add a key first
 				oldData := RandString()
@@ -226,7 +226,7 @@ func TestPutMultiples(t *testing.T) {
 			}
 
 			func TestScanRange4D(t *testing.T) {
-				store, err := NewKVStore(&KVStoreOptions{size: STORESIZE, kSize: 4})
+				store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 4})
 				assert.NoError(t, err)
 				// Add a key first
 				oldData := RandString()
@@ -255,7 +255,7 @@ func TestPutMultiples(t *testing.T) {
 			}
 
 			func TestScanGTRange3D(t *testing.T) {
-				store, err := NewKVStore(&KVStoreOptions{size: STORESIZE, kSize: 3})
+				store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 3})
 				assert.NoError(t, err)
 				// Add a key first
 				oldData := RandString()
@@ -289,7 +289,7 @@ func TestPutMultiples(t *testing.T) {
 
 
 			func TestScanGTRange4D(t *testing.T) {
-				store, err := NewKVStore(&KVStoreOptions{size: STORESIZE, kSize: 4})
+				store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 4})
 				assert.NoError(t, err)
 				// Add a key first
 				oldData := RandString()
@@ -322,7 +322,7 @@ func TestPutMultiples(t *testing.T) {
 
 
 			func TestScanLERange3D(t *testing.T) {
-				store, err := NewKVStore(&KVStoreOptions{size: STORESIZE, kSize: 3})
+				store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 3})
 				assert.NoError(t, err)
 				// Add a key first
 				oldData := RandString()
@@ -352,7 +352,7 @@ func TestPutMultiples(t *testing.T) {
 			}
 
 			func TestScanLERange4D(t *testing.T) {
-				store, err := NewKVStore(&KVStoreOptions{size: STORESIZE, kSize: 4})
+				store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 4})
 				assert.NoError(t, err)
 				// Add a key first
 				oldData := RandString()
@@ -381,7 +381,7 @@ func TestPutMultiples(t *testing.T) {
 
 
 			func TestPartialGet4D(t *testing.T) {
-				store, err := NewKVStore(&KVStoreOptions{size: STORESIZE, kSize: 4})
+				store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 4})
 				assert.NoError(t, err)
 				// Add a key first
 				oldData := RandString()
@@ -410,7 +410,7 @@ func TestPutMultiples(t *testing.T) {
 
 
 			func TestPartialGet3D(t *testing.T) {
-				store, err := NewKVStore(&KVStoreOptions{size: STORESIZE, kSize: 3})
+				store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 3})
 				assert.NoError(t, err)
 				// Add a key first
 				oldData := RandString()
@@ -439,7 +439,7 @@ func TestPutMultiples(t *testing.T) {
 
 
 			func TestGetNN3D(t *testing.T) {
-				store, err := NewKVStore(&KVStoreOptions{size: STORESIZE, kSize: 3})
+				store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 3})
 				assert.NoError(t, err)
 
 				toSearch, toFind, toStore := createValues(3, 50) // 4D and 50 values stored
@@ -456,7 +456,7 @@ func TestPutMultiples(t *testing.T) {
 
 
 			func TestGetNN2D(t *testing.T) {
-				store, err := NewKVStore(&KVStoreOptions{size: STORESIZE, kSize: 2})
+				store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 2})
 				assert.NoError(t, err)
 
 				toSearch, toFind, toStore := createValues(4, 20) // 4D and 20 values stored
@@ -472,7 +472,7 @@ func TestPutMultiples(t *testing.T) {
 
 
 			func TestGetNN10D(t *testing.T) {
-				store, err := NewKVStore(&KVStoreOptions{size: STORESIZE, kSize: 10})
+				store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 10})
 				assert.NoError(t, err)
 
 				toSearch, toFind, toStore := createValues(10, 100) // 4D and 50 values stored

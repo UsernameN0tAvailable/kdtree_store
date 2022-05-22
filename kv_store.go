@@ -5,14 +5,9 @@ Author: Tobias Famos & Mattia Pedrazzi
 
 package main
 
-type StorableType interface {
-	string 
-}
-
-
 type KVStoreOptions struct {
 	kSize int // key size
-	size  int // Store size
+	maxSize  int // Store size
 }
 
 type Range struct {
@@ -35,13 +30,13 @@ type KVStoreMock struct {
 }
 
 func NewKVStore(options *KVStoreOptions) (KVStore, error) {
-	if options.size == 0 {
-		options.size = 2048
+	if options.maxSize == 0 {
+		options.maxSize = 2048
 	}
 
 	return &KVStoreMock{
 		kSize: options.kSize,
-		size: options.size,
+		size: options.maxSize,
 	}, nil
 }
 
