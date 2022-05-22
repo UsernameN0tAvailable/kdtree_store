@@ -133,12 +133,27 @@ func TestDeleteLeafNode(t *testing.T) {
 	runDeletionTest(t, 49)
 }
 
-func TestFindLeftCase(t *testing.T) {
+func TestDeleteNodeWithOnlyLeftSubTree(t *testing.T) {
 	runDeletionTest(t, 7)
 }
 
 func TestDeleteKeyWithMultiples(t *testing.T) {
 	runDeletionTest(t, 20)
+}
+
+func TestDeleteRootNode(t *testing.T) {
+	runDeletionTest(t, 0)
+}
+
+func TestDeleteIndex8(t *testing.T) {
+	runDeletionTest(t, 8)
+}
+
+func TestDeleteEachNode(t *testing.T) {
+	for toDelete := 0; toDelete < 50; toDelete++ {
+		fmt.Println(toDelete)
+		runDeletionTest(t, toDelete)
+	}
 }
 
 func runDeletionTest(t *testing.T, indexToDelete int) {
@@ -147,7 +162,10 @@ func runDeletionTest(t *testing.T, indexToDelete int) {
 	assert.NoError(t, err)
 
 	var keyToDelete *Point = nil
+	var valueToDelete Value
+	fmt.Println(valueToDelete)
 	//valueToFind := ""
+	var allKeys []Point
 
 	for i := 0; i < 50; i++ {
 		data := RandString()
@@ -164,9 +182,11 @@ func runDeletionTest(t *testing.T, indexToDelete int) {
 				UInt64(uint64(rand.Intn(40))),
 				UInt64(uint64(rand.Intn(40))),
 			})
-
 		if i == indexToDelete {
 			keyToDelete = &point
+			valueToDelete = data
+		} else {
+			allKeys = append(allKeys, point)
 		}
 
 		assert.NoError(t, store.Put(&point, data))
@@ -180,6 +200,11 @@ func runDeletionTest(t *testing.T, indexToDelete int) {
 	}
 	_, err = store.Get(keyToDelete)
 	assert.Error(t, err, "No error thrown")
+
+	for index := 0; index < len(allKeys); index++ {
+		_, err := store.Get(&allKeys[index])
+		assert.NoError(t, err)
+	}
 }
 
 func TestUpsertKey(t *testing.T) {
