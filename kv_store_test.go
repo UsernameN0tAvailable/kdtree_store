@@ -178,6 +178,8 @@ func runDeletionTest(t *testing.T, indexToDelete int) {
 		assert.NoError(t, err)
 		assert.Equal(t, 49, store.GetNodesCount())
 	}
+	_, err = store.Get(keyToDelete)
+	assert.Error(t, err, "No error thrown")
 }
 
 func TestUpsertKey(t *testing.T) {
