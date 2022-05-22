@@ -47,3 +47,7 @@ func (n *Node) KeyValueAt(i int) uint64 {
 func (n *Node) GetByteSize() uint64 {
 	return n.Key.GetByteSize() + 10 + 8 + 8
 }
+
+func (n *Node) SmallerThan(otherNode *Node, keyIndexToCompare int) bool {
+	return n.KeyValueAt(keyIndexToCompare) < otherNode.KeyValueAt(keyIndexToCompare)
+}

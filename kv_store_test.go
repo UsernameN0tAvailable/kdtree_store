@@ -149,13 +149,6 @@ func TestDeleteIndex8(t *testing.T) {
 	runDeletionTest(t, 8)
 }
 
-func TestDeleteEachNode(t *testing.T) {
-	for toDelete := 0; toDelete < 50; toDelete++ {
-		fmt.Println(toDelete)
-		runDeletionTest(t, toDelete)
-	}
-}
-
 func runDeletionTest(t *testing.T, indexToDelete int) {
 	rand.Seed(12)
 	store, err := NewKDTree(10, STORESIZE)

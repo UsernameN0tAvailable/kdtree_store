@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 )
 
 type Value = [10]byte
@@ -110,6 +111,7 @@ func (t *KDTree) deleteNode(parent *Node, node *Node, depth int) {
 			t.deleteNode(minParent, minNode, depth)
 
 			// put min at top
+
 			minNode.Right = node.Right
 			minNode.Left = node.Left
 			if t.root == node {
@@ -125,22 +127,22 @@ func (t *KDTree) deleteNode(parent *Node, node *Node, depth int) {
 
 		keyIndex := depth % t.kSize
 		//TODO change to search maximum
-		depth, _, minNode := t.searchMinimum(node.Left, keyIndex, 0)
-		_, minParent, _ := t.searchQuery(&minNode.Key)
+		depth, _, maxNode := t.searchMaximum(node.Left, keyIndex, 0)
+		_, maxParent, _ := t.searchQuery(&maxNode.Key)
 
-		if minNode != nil {
+		if maxNode != nil {
 
-			t.deleteNode(minParent, minNode, depth)
+			t.deleteNode(maxParent, maxNode, depth)
 
 			// put min at top
-			minNode.Right = node.Right
-			minNode.Left = node.Left
+			maxNode.Right = node.Right
+			maxNode.Left = node.Left
 			if t.root == node {
-				t.root = minNode
+				t.root = maxNode
 			} else if parent.IsLeftChild(node) {
-				parent.Left = minNode
+				parent.Left = maxNode
 			} else {
-				parent.Right = minNode
+				parent.Right = maxNode
 			}
 		}
 	}
@@ -170,6 +172,71 @@ func (t *KDTree) searchMinimum(n *Node, keyIndex int, depthParam int) (int, *Nod
 	}
 
 	if nodeRight == nil {
+		if nodeLeft.SmallerThan(n, keyIndex) {
+			return depthLeft, parentLeft, nodeLeft
+		} else {
+			return depthParam, nil, n
+		}
+	}
+
+	if nodeLeft == nil {
+		if nodeRight.SmallerThan(n, keyIndex) {
+			return depthRight, parentRight, nodeRight
+		} else {
+			return depthParam, nil, n
+		}
+	}
+
+	minNode := getMin(nodeLeft, nodeRight, n, keyIndex)
+	switch minNode {
+	case n:
+		return depthParam, nil, n
+	case nodeLeft:
+		return depthLeft, nil, nodeLeft
+	case nodeRight:
+		return depthRight, nil, nodeRight
+	}
+	return 0, nil, nil
+}
+
+func getMin(node1 *Node, node2 *Node, node3 *Node, keyIndex int) *Node {
+	if node1.SmallerThan(node2, keyIndex) && node1.SmallerThan(node3, keyIndex) {
+		return node1
+	}
+	if node2.SmallerThan(node1, keyIndex) && node2.SmallerThan(node3, keyIndex) {
+		return node2
+	}
+	if node3.SmallerThan(node1, keyIndex) && node3.SmallerThan(node2, keyIndex) {
+		return node3
+	}
+	fmt.Println("ERRROR in comparing")
+	return nil
+}
+
+func (t *KDTree) searchMaximum(n *Node, keyIndex int, depthParam int) (int, *Node, *Node) {
+	//TODO also keep track of the parent
+	var (
+		parentLeft  *Node = nil
+		parentRight *Node = nil
+		nodeLeft    *Node = nil
+		nodeRight   *Node = nil
+		depthLeft   int   = 0
+		depthRight  int   = 0
+	)
+
+	if n.Left != nil {
+		depthLeft, parentLeft, nodeLeft = t.searchMaximum(n.Left, keyIndex, depthParam+1)
+	}
+
+	if n.Right != nil {
+		depthRight, parentRight, nodeRight = t.searchMaximum(n.Right, keyIndex, depthParam+1)
+	}
+
+	if nodeRight == nil && nodeLeft == nil {
+		return depthParam, nil, n
+	}
+
+	if nodeRight == nil {
 		return depthLeft, parentLeft, nodeLeft
 	}
 
@@ -177,7 +244,7 @@ func (t *KDTree) searchMinimum(n *Node, keyIndex int, depthParam int) (int, *Nod
 		return depthRight, parentRight, nodeRight
 	}
 
-	if nodeLeft.KeyValueAt(keyIndex) < nodeRight.KeyValueAt(keyIndex) {
+	if nodeLeft.KeyValueAt(keyIndex) > nodeRight.KeyValueAt(keyIndex) {
 		return depthLeft, parentLeft, nodeLeft
 	}
 
