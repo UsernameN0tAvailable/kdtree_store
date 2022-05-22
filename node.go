@@ -5,14 +5,12 @@ import (
 )
 
 type Node struct {
-	Key Point
+	Key   Point
 	value Value
 
-	Left *Node
+	Left  *Node
 	Right *Node
 }
-
-
 
 func NewNode(key *Point, value Value) (error, *Node) {
 
@@ -20,11 +18,13 @@ func NewNode(key *Point, value Value) (error, *Node) {
 		return errors.New("cannot store partial point"), nil
 	}
 
-
 	return nil, &Node{Key: *key, value: value, Left: nil, Right: nil}
 }
 
 func (n *Node) IsLeftChild(nc *Node) bool {
+	if n.Left == nil {
+		return false
+	}
 	return nc.Key.IsEqual(&n.Left.Key)
 }
 
@@ -47,5 +47,3 @@ func (n *Node) KeyValueAt(i int) uint64 {
 func (n *Node) GetByteSize() uint64 {
 	return n.Key.GetByteSize() + 10 + 8 + 8
 }
-
-
