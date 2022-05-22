@@ -157,9 +157,12 @@ func (t * KDTree) searchMinimum(n * Node, keyIndex int, depthParam int) (int, *N
 		depthRight, parentRight, nodeRight = t.searchMinimum(n.Right, keyIndex, depthParam + 1)
 	}
 
+	if nodeRight == nil && nodeLeft == nil {
+		return depthParam, nil, n
+	}
 
 	if nodeRight == nil {
-		return depthRight, parentLeft, nodeLeft
+		return depthLeft, parentLeft, nodeLeft
 	}
 
 	if nodeLeft == nil {
