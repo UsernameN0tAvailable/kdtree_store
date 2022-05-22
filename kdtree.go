@@ -102,7 +102,8 @@ func (t * KDTree) deleteNode(parent *Node, node *Node, depth int) {
 	} else if node.Right != nil {
 
 		keyIndex := depth % t.kSize
-		depth, minParent, minNode := t.searchMinimum(node.Right, keyIndex, 0)
+		depth, _, minNode := t.searchMinimum(node.Right, keyIndex, 0)
+		_, minParent, _ := t.searchQuery(&minNode.Key)
 
 		if minNode != nil {
 
@@ -116,7 +117,9 @@ func (t * KDTree) deleteNode(parent *Node, node *Node, depth int) {
 	} else if node.Left != nil {
 
 		keyIndex := depth % t.kSize
-		depth, minParent, minNode := t.searchMinimum(node.Left, keyIndex, 0)
+		//TODO change to search maximum
+		depth, _, minNode := t.searchMinimum(node.Left, keyIndex, 0)
+		_, minParent, _ := t.searchQuery(&minNode.Key)
 
 		if minNode != nil {
 
