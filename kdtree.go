@@ -112,6 +112,13 @@ func (t *KDTree) deleteNode(parent *Node, node *Node, depth int) {
 			// put min at top
 			minNode.Right = node.Right
 			minNode.Left = node.Left
+			if t.root == node {
+				t.root = minNode
+			} else if parent.IsLeftChild(node) {
+				parent.Left = minNode
+			} else {
+				parent.Right = minNode
+			}
 		}
 
 	} else if node.Left != nil {
@@ -128,17 +135,19 @@ func (t *KDTree) deleteNode(parent *Node, node *Node, depth int) {
 			// put min at top
 			minNode.Right = node.Right
 			minNode.Left = node.Left
-
-			// swap
-			refTmp := minParent.Left
-			minParent.Left = minParent.Right
-			minParent.Right = refTmp
+			if t.root == node {
+				t.root = minNode
+			} else if parent.IsLeftChild(node) {
+				parent.Left = minNode
+			} else {
+				parent.Right = minNode
+			}
 		}
 	}
 }
 
 func (t *KDTree) searchMinimum(n *Node, keyIndex int, depthParam int) (int, *Node, *Node) {
-
+	//TODO also keep track of the parent
 	var (
 		parentLeft  *Node = nil
 		parentRight *Node = nil
