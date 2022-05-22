@@ -135,10 +135,49 @@ func TestPutMultiples(t *testing.T) {
 			}
 		}
 
-	func TestDeleteKeyWithMultiples(t *testing.T) {
+func TestDeleteLeafNode(t *testing.T) {
+	rand.Seed(12)
+	store, err := NewKDTree(10, STORESIZE)
+	assert.NoError(t, err)
 
-		store, err := NewKDTree(10, STORESIZE)
+	var keyToDelete *Point = nil
+	//valueToFind := ""
+
+	for i := 0; i < 50; i++ {
+		data := RandString()
+		point := NewPoint(
+			Key{
+				UInt64(uint64(rand.Intn(40))),
+				UInt64(uint64(rand.Intn(40))),
+				UInt64(uint64(rand.Intn(40))),
+				UInt64(uint64(rand.Intn(40))),
+				UInt64(uint64(rand.Intn(40))),
+				UInt64(uint64(rand.Intn(40))),
+				UInt64(uint64(rand.Intn(40))),
+				UInt64(uint64(rand.Intn(40))),
+				UInt64(uint64(rand.Intn(40))),
+				UInt64(uint64(rand.Intn(40))),
+			})
+
+		if i == 49 {
+			keyToDelete = &point
+		}
+
+		assert.NoError(t, store.Put(&point, data))
+	}
+
+	fmt.Println(store.GetNodesCount())
+
+	if err := store.Delete(keyToDelete); assert.NoError(t, err) {
 		assert.NoError(t, err)
+		assert.Equal(t, 49, store.GetNodesCount())
+	}
+}
+
+func TestDeleteKeyWithMultiples(t *testing.T) {
+	rand.Seed(12)
+	store, err := NewKDTree(10, STORESIZE)
+	assert.NoError(t, err)
 
 		var keyToDelete *Point = nil
 		//valueToFind := ""
