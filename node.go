@@ -25,7 +25,7 @@ func NewNode(key *Point, value Value) (error, *Node) {
 }
 
 func (n *Node) IsLeftChild(nc *Node) bool {
-	return n.Key.IsEqual(&n.Left.Key)
+	return nc.Key.IsEqual(&n.Left.Key)
 }
 
 func (n *Node) IsLeaf() bool {
