@@ -76,20 +76,13 @@ func (t *KDTree) Get(key *Point) ([]Value, error) {
 func (t *KDTree) Delete(key *Point) error {
 
 	depth, parent, node := t.searchQuery(key)
-
-	if node == nil {
-		return errors.New("node to delete not found!")
-	}
-
-	t.deleteNode(parent, node, depth)
-
-	return nil
+	return t.deleteNode(parent, node, depth)
 }
 
-func (t *KDTree) deleteNode(parent *Node, node *Node, depth int) {
+func (t *KDTree) deleteNode(parent *Node, node *Node, depth int) error {
 
 	if node == nil {
-		return
+		return errors.New("node to delete not found")
 	}
 
 	if node.IsLeaf() {
@@ -145,6 +138,10 @@ func (t *KDTree) deleteNode(parent *Node, node *Node, depth int) {
 			}
 		}
 	}
+
+	t.size += node.GetByteSize()
+
+	return nil
 }
 
 func (t *KDTree) searchMinimum(n *Node, keyIndex int, depthParam int) (int, *Node, *Node) {
