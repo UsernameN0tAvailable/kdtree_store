@@ -406,11 +406,12 @@ func TestScanLERange4D(t *testing.T) {
 }
 
 func TestPartialGet4D(t *testing.T) {
-	t.Skipf("Skipped , will be implement in Part 2")
-	store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 4})
+	store, err := NewKDTree(4, STORESIZE)
 	assert.NoError(t, err)
 	// Add a key first
 	oldData := RandString()
+	toFind1 := RandString()
+	toFind2 := RandString()
 
 	// create and store points
 	point1 := NewPoint(Key{UInt64(0), UInt64(0), UInt64(0), UInt64(0)})
@@ -421,8 +422,8 @@ func TestPartialGet4D(t *testing.T) {
 
 	assert.NoError(t, store.Put(&point1, oldData))
 	assert.NoError(t, store.Put(&point2, oldData))
-	assert.NoError(t, store.Put(&point3, oldData))
-	assert.NoError(t, store.Put(&point4, oldData))
+	assert.NoError(t, store.Put(&point3, toFind1))
+	assert.NoError(t, store.Put(&point4, toFind2))
 	assert.NoError(t, store.Put(&point5, oldData))
 
 	searchPoint := NewPoint(Key{UInt64(2), None(), UInt64(2), None()})
@@ -435,8 +436,7 @@ func TestPartialGet4D(t *testing.T) {
 }
 
 func TestPartialGet3D(t *testing.T) {
-	t.Skipf("Skipped , will be implement in Part 2")
-	store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 3})
+	store, err := NewKDTree(3, STORESIZE)
 	assert.NoError(t, err)
 	// Add a key first
 	oldData := RandString()
@@ -454,7 +454,7 @@ func TestPartialGet3D(t *testing.T) {
 	assert.NoError(t, store.Put(&point4, oldData))
 	assert.NoError(t, store.Put(&point5, oldData))
 
-	searchPoint := NewPoint(Key{UInt64(1), None(), None(), None()})
+	searchPoint := NewPoint(Key{UInt64(1), None(), None()})
 
 	entries, err := store.Get(&searchPoint)
 

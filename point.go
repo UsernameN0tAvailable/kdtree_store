@@ -38,11 +38,32 @@ func (p *Point) IsEqual(pc *Point) bool {
 	return true
 }
 
+
+func (p *Point) IsPartiallyEqual(pc *Point) bool {
+
+	if p.GetSize() != pc.GetSize() {
+		return false
+	}
+
+	for i, k := range p.coords {
+
+		_, p1k := pc.GetKeyAt(i)
+
+		// if it is none than is matches
+		if p1k.IsSome && p1k.Value != k.Value {
+			return false
+		}
+	}
+
+	return true
+}
+
+
 func (p *Point) IsPartial() bool {
 
 	for _, k := range p.coords {
 		if !k.IsSome {
-			return false
+			return true
 		}
 
 	}

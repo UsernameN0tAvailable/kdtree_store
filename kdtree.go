@@ -62,7 +62,7 @@ func (t *KDTree) Put(key *Point, value Value) error {
 func (t *KDTree) Get(key *Point) ([]Value, error) {
 
 	if key.IsPartial() {
-		return t.partialSearchQuey(key)
+		return t.partialSearchQuery(0, key, t.root), nil
 	}
 
 	_, _, node := t.searchQuery(key)
@@ -301,8 +301,36 @@ func (t *KDTree) searchQuery(key *Point) (int, *Node, *Node) {
 	}
 }
 
-func (t *KDTree) partialSearchQuey(k *Point) ([]Value, error) {
-	return make([]Value, 0, 0), nil
+func (t *KDTree) partialSearchQuery(depth int, key *Point, node *Node) []Value {
+
+	// reserve size 10
+	values := make([]Value, 0, 10)
+
+	if node == nil {
+		return values
+	}
+
+	if node.Key.IsPartiallyEqual(key) {
+		values = append(values, node.GetValue())
+	}
+
+	keyIndex := depth % t.kSize
+
+	_, kv := key.GetKeyAt(keyIndex)
+
+	nodeKeyValue := node.KeyValueAt(keyIndex)
+
+	if !kv.IsSome || nodeKeyValue  >= kv.Value {
+		resultLeft :=t.partialSearchQuery(depth + 1, key, node.Left)
+		values = append(values, resultLeft...)
+	}
+
+	if !kv.IsSome || nodeKeyValue < kv.Value {
+		resultRight :=t.partialSearchQuery(depth + 1, key, node.Right)
+		values = append(values, resultRight...)
+	}
+
+	return values
 }
 
 func (t *KDTree) GetNodesCount() int {
