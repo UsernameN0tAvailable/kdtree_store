@@ -433,6 +433,9 @@ func TestPartialGet4D(t *testing.T) {
 	assert.NoError(t, err)
 	// Check length of slice
 	assert.Len(t, entries, 2)
+	assert.Equal(t, toFind1, entries[0])
+	assert.Equal(t, toFind2, entries[1])
+
 }
 
 func TestPartialGet3D(t *testing.T) {
@@ -440,6 +443,13 @@ func TestPartialGet3D(t *testing.T) {
 	assert.NoError(t, err)
 	// Add a key first
 	oldData := RandString()
+	toFind1 := RandString()
+	toFind2 := RandString()
+	toFind3 := RandString()
+
+
+
+
 
 	// create and store points
 	point1 := NewPoint(Key{UInt64(0), UInt64(0), UInt64(0)})
@@ -449,10 +459,10 @@ func TestPartialGet3D(t *testing.T) {
 	point5 := NewPoint(Key{UInt64(1), UInt64(3), UInt64(3)})
 
 	assert.NoError(t, store.Put(&point1, oldData))
-	assert.NoError(t, store.Put(&point2, oldData))
-	assert.NoError(t, store.Put(&point3, oldData))
+	assert.NoError(t, store.Put(&point2, toFind1))
+	assert.NoError(t, store.Put(&point3, toFind2))
 	assert.NoError(t, store.Put(&point4, oldData))
-	assert.NoError(t, store.Put(&point5, oldData))
+	assert.NoError(t, store.Put(&point5, toFind3))
 
 	searchPoint := NewPoint(Key{UInt64(1), None(), None()})
 
@@ -461,6 +471,11 @@ func TestPartialGet3D(t *testing.T) {
 	assert.NoError(t, err)
 	// Check length of slice
 	assert.Len(t, entries, 3)
+	assert.Equal(t, toFind1, entries[0])
+	assert.Equal(t, toFind2, entries[1])
+	assert.Equal(t, toFind3, entries[2])
+
+
 }
 
 func TestGetNN3D(t *testing.T) {
