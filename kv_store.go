@@ -18,8 +18,8 @@ type Range struct {
 type KVStore interface {
 	Put(key *Point, value Value) error
 	Get(key *Point) ([]Value, error) // exact match query and partial matches
-	Delete(key * Point) error 
-	Scan(options *Range) ([]Value, error) // range query
+	Delete(key *Point) error 
+	Scan(from *Point, to *Point) ([]Value, error) // range query
 	GetNN(key *Point) (Value, error) // nearest neighbour query
 	Upsert(key *Point, value Value) error
 }
@@ -68,6 +68,6 @@ func (k *KVStoreMock) Upsert(key *Point, value Value) error {
 	return nil
 }
 
-func (k *KVStoreMock) Scan(*Range) ([]Value, error) {
+func (k *KVStoreMock) Scan(from *Point, to *Point) ([]Value, error) {
 	return make([]Value, 0), nil
 }

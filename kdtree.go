@@ -246,8 +246,60 @@ func (t *KDTree) searchMaximum(n *Node, keyIndex int, depthParam int) (int, *Nod
 	return depthRight, parentRight, nodeRight
 }
 
-func (t *KDTree) Scan(options *Range) ([]Value, error) {
-	return make([]Value, 0), nil
+func (t *KDTree) Scan(from *Point, to *Point) ([]Value, error) {
+
+	if (from != nil && from.GetSize() != t.kSize) || (to != nil && to.GetSize() != t.kSize) {
+		return make([]Value, 0), errors.New("wrong key size")
+	}
+
+	result := t.scanQuery(t.root, from , to, 0)
+
+	return result, nil
+}
+
+func (t *KDTree) scanQuery(node *Node, from *Point, to *Point, depth int) []Value {
+
+	values := make([]Value, 0, 10)
+
+	if node == nil {
+		return values
+	}
+
+	keyIndex := depth % t.kSize
+	nodeKey := node.KeyValueAt(keyIndex)
+
+	var fromK uint64 = 0 
+	var toK uint64 = math.MaxUint64
+
+	if from != nil {
+		_, tmpK := from.GetKeyAt(keyIndex)
+		fromK = tmpK.Value
+	}
+
+	if to != nil {
+		_, tmpK := to.GetKeyAt(keyIndex)
+		toK = tmpK.Value
+	}
+
+	branchesToVisit := 0
+
+	if nodeKey >= fromK {
+		result := t.scanQuery(node.Left, from, to, depth + 1)
+		values = append(values, result...)
+		branchesToVisit++
+	}
+
+	if nodeKey <= toK {
+		result := t.scanQuery(node.Right, from, to, depth + 1)
+		values = append(values, result...)
+		branchesToVisit++
+	}
+
+	if branchesToVisit == 2 && node.Key.IsWithin(from, to)   {
+		values = append(values, node.GetValue())
+	}
+
+	return values
 }
 
 func (t *KDTree) GetNN(key *Point) (Value, error) {

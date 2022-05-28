@@ -21,6 +21,34 @@ func NewPoint(c Key) Point {
 	return Point{coords: c}
 }
 
+
+func (p *Point) IsWithin(from *Point, to *Point) bool {
+
+	var fromCoord uint64 =  0
+	var toCoord uint64 =  math.MaxUint64
+
+	for i, nk := range p.coords {
+
+
+		if from != nil {
+			_, fromK :=  from.GetKeyAt(i)
+			fromCoord = fromK.Value
+		}
+
+		if to != nil {
+			_, toK :=  to.GetKeyAt(i)
+			toCoord = toK.Value
+	}
+
+		if nk.Value > toCoord || nk.Value < fromCoord {
+			return false
+		}
+	}
+
+
+	return true
+}
+
 func (p *Point) IsEqual(pc *Point) bool {
 
 	if p.GetSize() != pc.GetSize() {

@@ -221,8 +221,8 @@ func TestUpsert(t *testing.T) {
 }
 
 func TestScanRange3D(t *testing.T) {
-	t.Skipf("Skipped , will be implement in Part 2")
-	store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 3})
+
+	store, err := NewKDTree(3, STORESIZE)
 	assert.NoError(t, err)
 	// Add a key first
 	oldData := RandString()
@@ -240,18 +240,19 @@ func TestScanRange3D(t *testing.T) {
 	assert.NoError(t, store.Put(&point4, oldData))
 	assert.NoError(t, store.Put(&point5, oldData))
 
-	entries, err := store.Scan(&Range{
-		minKey: NewPoint(Key{UInt64(1), UInt64(1), UInt64(1)}),
-		maxKey: NewPoint(Key{UInt64(3), UInt64(3), UInt64(3)}),
-	})
+	from := NewPoint(Key{UInt64(1), UInt64(1), UInt64(1)})
+	to := NewPoint(Key{UInt64(3), UInt64(3), UInt64(3)})
+
+	entries, err := store.Scan(&from, &to)
+
 	assert.NoError(t, err)
 	// Check length of slice
 	assert.Len(t, entries, 4)
 }
 
 func TestScanRange4D(t *testing.T) {
-	t.Skipf("Skipped , will be implement in Part 2")
-	store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 4})
+
+	store, err := NewKDTree(4, STORESIZE)
 	assert.NoError(t, err)
 	// Add a key first
 	oldData := RandString()
@@ -269,18 +270,18 @@ func TestScanRange4D(t *testing.T) {
 	assert.NoError(t, store.Put(&point4, oldData))
 	assert.NoError(t, store.Put(&point5, oldData))
 
-	entries, err := store.Scan(&Range{
-		minKey: NewPoint(Key{UInt64(1), UInt64(1), UInt64(1), UInt64(1)}),
-		maxKey: NewPoint(Key{UInt64(3), UInt64(3), UInt64(3), UInt64(3)}),
-	})
+	from := NewPoint(Key{UInt64(1), UInt64(1), UInt64(1), UInt64(1)})
+	to := NewPoint(Key{UInt64(3), UInt64(3), UInt64(3), UInt64(3)})
+
+	entries, err := store.Scan(&from, &to)
+
 	assert.NoError(t, err)
 	// Check length of slice
 	assert.Len(t, entries, 4)
 }
 
 func TestScanGTRange3D(t *testing.T) {
-	t.Skipf("Skipped , will be implement in Part 2")
-	store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 3})
+	store, err := NewKDTree(3, STORESIZE)
 	assert.NoError(t, err)
 	// Add a key first
 	oldData := RandString()
@@ -299,13 +300,9 @@ func TestScanGTRange3D(t *testing.T) {
 	assert.NoError(t, store.Put(&point4, oldData))
 	assert.NoError(t, store.Put(&point5, oldData))
 
-	r := Range{
-		minKey: NewPoint(Key{UInt64(2), UInt64(2), UInt64(2)}),
-	}
+	from := NewPoint(Key{UInt64(2), UInt64(2), UInt64(2)})
 
-	fmt.Println(r)
-
-	entries, err := store.Scan(&r)
+	entries, err := store.Scan(&from, nil)
 
 	assert.NoError(t, err)
 	// Check length of slice
@@ -313,8 +310,8 @@ func TestScanGTRange3D(t *testing.T) {
 }
 
 func TestScanGTRange4D(t *testing.T) {
-	t.Skipf("Skipped , will be implement in Part 2")
-	store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 4})
+
+	store, err := NewKDTree(4, STORESIZE)
 	assert.NoError(t, err)
 	// Add a key first
 	oldData := RandString()
@@ -332,13 +329,9 @@ func TestScanGTRange4D(t *testing.T) {
 	assert.NoError(t, store.Put(&point4, oldData))
 	assert.NoError(t, store.Put(&point5, oldData))
 
-	r := Range{
-		minKey: NewPoint(Key{UInt64(2), UInt64(2), UInt64(2), UInt64(2)}),
-	}
+	from := NewPoint(Key{UInt64(2), UInt64(2), UInt64(2), UInt64(2)})
 
-	fmt.Println(r)
-
-	entries, err := store.Scan(&r)
+	entries, err := store.Scan(&from, nil)
 
 	assert.NoError(t, err)
 	// Check length of slice
@@ -346,8 +339,7 @@ func TestScanGTRange4D(t *testing.T) {
 }
 
 func TestScanLERange3D(t *testing.T) {
-	t.Skipf("Skipped , will be implement in Part 2")
-	store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 3})
+	store, err := NewKDTree(3, STORESIZE)
 	assert.NoError(t, err)
 	// Add a key first
 	oldData := RandString()
@@ -365,11 +357,9 @@ func TestScanLERange3D(t *testing.T) {
 	assert.NoError(t, store.Put(&point4, oldData))
 	assert.NoError(t, store.Put(&point5, oldData))
 
-	r := Range{
-		minKey: NewPoint(Key{UInt64(2), UInt64(2), UInt64(2)}),
-	}
+	to := NewPoint(Key{UInt64(2), UInt64(2), UInt64(2)})
 
-	entries, err := store.Scan(&r)
+	entries, err := store.Scan(nil, &to)
 
 	assert.NoError(t, err)
 	// Check length of slice
@@ -377,8 +367,7 @@ func TestScanLERange3D(t *testing.T) {
 }
 
 func TestScanLERange4D(t *testing.T) {
-	t.Skipf("Skipped , will be implement in Part 2")
-	store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 4})
+	store, err := NewKDTree(4, STORESIZE)
 	assert.NoError(t, err)
 	// Add a key first
 	oldData := RandString()
@@ -396,9 +385,9 @@ func TestScanLERange4D(t *testing.T) {
 	assert.NoError(t, store.Put(&point4, oldData))
 	assert.NoError(t, store.Put(&point5, oldData))
 
-	entries, err := store.Scan(&Range{
-		maxKey: NewPoint(Key{UInt64(2), UInt64(2), UInt64(2), UInt64(2)}),
-	})
+	to := NewPoint(Key{UInt64(2), UInt64(2), UInt64(2), UInt64(2)})
+
+	entries, err := store.Scan(nil, &to)
 
 	assert.NoError(t, err)
 	// Check length of slice
@@ -435,7 +424,6 @@ func TestPartialGet4D(t *testing.T) {
 	assert.Len(t, entries, 2)
 	assert.Equal(t, toFind1, entries[0])
 	assert.Equal(t, toFind2, entries[1])
-
 }
 
 func TestPartialGet3D(t *testing.T) {
