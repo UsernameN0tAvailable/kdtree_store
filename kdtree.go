@@ -2,6 +2,8 @@ package main
 
 import (
 	"errors"
+	"fmt"
+	"math"
 )
 
 type Value = [10]byte
@@ -250,8 +252,86 @@ func (t *KDTree) Scan(options *Range) ([]Value, error) {
 }
 
 func (t *KDTree) GetNN(key *Point) (Value, error) {
-	return *new(Value), nil
+
+	if t.root == nil {
+		return *new(Value), errors.New("Tree is empty!")
+	}
+
+	if key == nil || key.GetSize() != int(t.kSize) {
+		return *new(Value), errors.New("Wrong or nil key!")
+	}
+
+	nearestNode := t.nearestNeighbour(t.root, key, 0)
+
+	fmt.Println("found", nearestNode.Key)
+
+	return nearestNode.GetValue(), nil
 }
+
+func (t *KDTree) nearestNeighbour(node *Node, key *Point, depth int) *Node {
+
+	if node == nil {
+		return nil
+	}
+
+	keyIndex := depth % t.kSize
+
+	nodeKeyValue := node.KeyValueAt(keyIndex)
+	_, kv := key.GetKeyAt(keyIndex)
+
+	var nextBranch *Node 
+	var alternativeBranch *Node
+
+	if   kv.Value < nodeKeyValue{
+		nextBranch = node.Right
+		alternativeBranch = node.Left
+	} else {
+		nextBranch = node.Left
+		alternativeBranch = node.Right
+	}
+
+	tmp := t.nearestNeighbour(nextBranch, key, depth + 1)
+	closest := findClosest(key, tmp, node)
+
+	if closest == nil {
+		return nil
+	}
+
+	_, distanceToBest := key.GetDistance(&closest.Key)
+
+	radiusSquared := distanceToBest * distanceToBest
+	dist := float64(kv.Value) - float64(nodeKeyValue)
+
+	if (radiusSquared >= dist * dist) {
+		tmp = t.nearestNeighbour(alternativeBranch, key, depth + 1)
+		closest = findClosest(key, tmp, closest)
+	}
+
+
+	return closest
+}
+
+func findClosest(key *Point, node1 *Node, node2 *Node) *Node {
+
+	dist1 := math.MaxFloat64
+	dist2 := math.MaxFloat64
+
+	if node1 != nil {
+		_, dist1 = key.GetDistance(&node1.Key)
+	}
+	if node2 != nil {
+		_, dist2 = key.GetDistance(&node2.Key)
+	}
+
+	if dist1 < dist2 {
+		return node1
+	}
+
+	return node2
+}
+
+
+
 
 func (t *KDTree) Upsert(key *Point, value Value) error {
 	return nil

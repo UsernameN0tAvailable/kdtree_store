@@ -479,13 +479,17 @@ func TestPartialGet3D(t *testing.T) {
 }
 
 func TestGetNN3D(t *testing.T) {
-	t.Skipf("Skipped , will be implement in Part 2")
-	store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 3})
+
+	store, err := NewKDTree(3, STORESIZE)
 	assert.NoError(t, err)
 
-	toSearch, toFind, toStore := createValues(3, 50) // 4D and 50 values stored
+	toSearch, toFind, toStore := createValues(3, 3) // 3D and 50 values stored
+
+	fmt.Println("to search", toSearch)
+	fmt.Println("to find", toFind)
 
 	for _, kv := range toStore {
+		fmt.Println(kv)
 		assert.NoError(t, store.Put(&kv.key, kv.value))
 	}
 
