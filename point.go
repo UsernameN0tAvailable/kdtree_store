@@ -9,6 +9,7 @@ import (
 	"errors"
 	"math"
 )
+
 //type Key = []uint64
 type Key = []OptionalUInt64 // we need "optional values" for partial matches
 
@@ -100,12 +101,20 @@ func (p *Point) GetDistance(p_1 *Point) (error, float64) {
 		_, p1k := p_1.GetKeyAt(i)
 
 		if p1k.IsSome && k.IsSome {
-			tmp := k.Value - p1k.Value
+
+			// avoid overflow
+			var tmp uint64
+			if k.Value > p1k.Value {
+				tmp = k.Value - p1k.Value
+			} else {
+				tmp = p1k.Value - k.Value
+			}
+
 			deltaSum += float64(tmp * tmp)
-	
+
 		}
 
-			}
+	}
 
 	return nil, math.Sqrt(deltaSum)
 }

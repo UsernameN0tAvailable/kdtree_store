@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"math"
 )
 
@@ -263,8 +262,6 @@ func (t *KDTree) GetNN(key *Point) (Value, error) {
 
 	nearestNode := t.nearestNeighbour(t.root, key, 0)
 
-	fmt.Println("found", nearestNode.Key)
-
 	return nearestNode.GetValue(), nil
 }
 
@@ -282,7 +279,7 @@ func (t *KDTree) nearestNeighbour(node *Node, key *Point, depth int) *Node {
 	var nextBranch *Node 
 	var alternativeBranch *Node
 
-	if   kv.Value < nodeKeyValue{
+	if   kv.Value > nodeKeyValue {
 		nextBranch = node.Right
 		alternativeBranch = node.Left
 	} else {
@@ -299,10 +296,9 @@ func (t *KDTree) nearestNeighbour(node *Node, key *Point, depth int) *Node {
 
 	_, distanceToBest := key.GetDistance(&closest.Key)
 
-	radiusSquared := distanceToBest * distanceToBest
-	dist := float64(kv.Value) - float64(nodeKeyValue)
+	dist := math.Abs(float64(nodeKeyValue) - float64(kv.Value))
 
-	if (radiusSquared >= dist * dist) {
+	if (distanceToBest >= dist ) {
 		tmp = t.nearestNeighbour(alternativeBranch, key, depth + 1)
 		closest = findClosest(key, tmp, closest)
 	}

@@ -448,9 +448,6 @@ func TestPartialGet3D(t *testing.T) {
 	toFind3 := RandString()
 
 
-
-
-
 	// create and store points
 	point1 := NewPoint(Key{UInt64(0), UInt64(0), UInt64(0)})
 	point2 := NewPoint(Key{UInt64(1), UInt64(1), UInt64(1)})
@@ -480,30 +477,27 @@ func TestPartialGet3D(t *testing.T) {
 
 func TestGetNN3D(t *testing.T) {
 
+
 	store, err := NewKDTree(3, STORESIZE)
 	assert.NoError(t, err)
 
-	toSearch, toFind, toStore := createValues(3, 3) // 3D and 50 values stored
-
-	fmt.Println("to search", toSearch)
-	fmt.Println("to find", toFind)
+	toSearch, toFind, toStore := createValues(3, 50) // 4D and 20 values stored
 
 	for _, kv := range toStore {
-		fmt.Println(kv)
 		assert.NoError(t, store.Put(&kv.key, kv.value))
 	}
 
 	if result, err := store.GetNN(&toSearch.key); assert.NoError(t, err) {
 		assert.Equal(t, toFind.value, result)
-	}
+	} 
 }
 
 func TestGetNN2D(t *testing.T) {
-	t.Skipf("Skipped , will be implement in Part 2")
-	store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 2})
+
+	store, err := NewKDTree(2, STORESIZE)
 	assert.NoError(t, err)
 
-	toSearch, toFind, toStore := createValues(4, 20) // 4D and 20 values stored
+	toSearch, toFind, toStore := createValues(2, 3) // 4D and 20 values stored
 
 	for _, kv := range toStore {
 		assert.NoError(t, store.Put(&kv.key, kv.value))
@@ -515,11 +509,11 @@ func TestGetNN2D(t *testing.T) {
 }
 
 func TestGetNN10D(t *testing.T) {
-	t.Skipf("Skipped , will be implement in Part 2")
-	store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 10})
+
+	store, err := NewKDTree(1, STORESIZE)
 	assert.NoError(t, err)
 
-	toSearch, toFind, toStore := createValues(10, 100) // 4D and 50 values stored
+	toSearch, toFind, toStore := createValues(1, 3) // 4D and 20 values stored
 
 	for _, kv := range toStore {
 		assert.NoError(t, store.Put(&kv.key, kv.value))
@@ -533,7 +527,7 @@ func TestGetNN10D(t *testing.T) {
 // create values for different dimensions
 // first return value is the value to search
 // second is the nearest neighbour
-func createValues(dimensions int, keyValuePairsCount int) (*KeyValuePair, *KeyValuePair, []KeyValuePair) {
+func createValues(dimensions int, keyValuePairsCount int) (KeyValuePair, KeyValuePair, []KeyValuePair) {
 
 	keyValuePairs := make([]KeyValuePair, keyValuePairsCount)
 
@@ -551,20 +545,20 @@ func createValues(dimensions int, keyValuePairsCount int) (*KeyValuePair, *KeyVa
 	min := math.MaxFloat64
 
 	toSearch := keyValuePairs[0]
-	var nearest *KeyValuePair = nil
+	toStore := keyValuePairs[1:]
+	var nearest KeyValuePair 
 
-	for _, kv := range keyValuePairs[1:] {
+	for _, kv := range toStore {
 		_, distance := toSearch.key.GetDistance(&kv.key)
-
 		if distance < min {
 			min = distance
-			nearest = &kv
+			nearest = kv
 		}
 	}
 
-	return &toSearch, nearest, keyValuePairs[1:]
+	return toSearch, nearest, toStore
 }
 
 func randomUint64() uint64 {
-	return uint64(rand.Uint32())<<32 + uint64(rand.Uint32())
+	return uint64(rand.Uint32()) // avoid overflows!!
 }
