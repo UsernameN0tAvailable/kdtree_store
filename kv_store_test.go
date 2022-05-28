@@ -497,7 +497,7 @@ func TestGetNN2D(t *testing.T) {
 	store, err := NewKDTree(2, STORESIZE)
 	assert.NoError(t, err)
 
-	toSearch, toFind, toStore := createValues(2, 3) // 4D and 20 values stored
+	toSearch, toFind, toStore := createValues(2, 50) // 4D and 20 values stored
 
 	for _, kv := range toStore {
 		assert.NoError(t, store.Put(&kv.key, kv.value))
@@ -510,10 +510,10 @@ func TestGetNN2D(t *testing.T) {
 
 func TestGetNN10D(t *testing.T) {
 
-	store, err := NewKDTree(1, STORESIZE)
+	store, err := NewKDTree(10, STORESIZE)
 	assert.NoError(t, err)
 
-	toSearch, toFind, toStore := createValues(1, 3) // 4D and 20 values stored
+	toSearch, toFind, toStore := createValues(10, 60) // 4D and 20 values stored
 
 	for _, kv := range toStore {
 		assert.NoError(t, store.Put(&kv.key, kv.value))
