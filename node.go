@@ -21,6 +21,10 @@ func NewNode(key *Point, value Value) (error, *Node) {
 	return nil, &Node{Key: *key, value: value, Left: nil, Right: nil}
 }
 
+func (n *Node) SetValue(value Value) {
+	n.value = value
+}
+
 func (n *Node) IsLeftChild(nc *Node) bool {
 	if n.Left == nil {
 		return false

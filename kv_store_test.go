@@ -200,9 +200,8 @@ func runDeletionTest(t *testing.T, indexToDelete int) {
 	}
 }
 
-func TestUpsertKey(t *testing.T) {
-	t.Skipf("Skipped , will be implement in Part 2")
-	store, err := NewKVStore(&KVStoreOptions{maxSize: STORESIZE, kSize: 3})
+func TestUpsert(t *testing.T) {
+	store, err := NewKDTree(3, STORESIZE)
 	assert.NoError(t, err)
 
 	point := NewPoint(Key{UInt64(0), UInt64(0), UInt64(0)})
@@ -210,13 +209,14 @@ func TestUpsertKey(t *testing.T) {
 	// Add a key first
 	oldData := RandString()
 	assert.NoError(t, store.Put(&point, oldData))
+
 	// Update the key
 	dataNew := RandString()
 	assert.NoError(t, store.Upsert(&point, dataNew))
 	// Check if update has worked
 	if result, err := store.Get(&point); assert.NoError(t, err) {
 		assert.Len(t, result, 1)
-		assert.Equal(t, dataNew, result)
+		assert.Equal(t, dataNew, result[0])
 	}
 }
 

@@ -330,6 +330,19 @@ func findClosest(key *Point, node1 *Node, node2 *Node) *Node {
 
 
 func (t *KDTree) Upsert(key *Point, value Value) error {
+
+	if key.GetSize() != t.kSize || key.IsPartial() {
+		return errors.New("Wrong key!")
+	}
+
+	_,_, node := t.searchQuery(key)
+
+	if node == nil {
+		return errors.New("Couldnt find node to upsert")
+	}
+
+	node.SetValue(value)
+
 	return nil
 }
 
@@ -372,7 +385,6 @@ func (t *KDTree) searchQuery(key *Point) (int, *Node, *Node) {
 
 			parentNode = currentNode
 			currentNode = currentNode.Left
-
 		}
 	}
 }
