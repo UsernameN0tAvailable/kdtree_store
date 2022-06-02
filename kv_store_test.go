@@ -10,7 +10,7 @@ import (
 	"math"
 	"math/rand"
 	"testing"
-
+	"time"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -469,7 +469,7 @@ func TestGetNN3D(t *testing.T) {
 	store, err := NewKDTree(3, STORESIZE)
 	assert.NoError(t, err)
 
-	toSearch, toFind, toStore := createValues(3, 50) // 4D and 20 values stored
+	toSearch, toFind, toStore := createValues(3, 50)
 
 	for _, kv := range toStore {
 		assert.NoError(t, store.Put(&kv.key, kv.value))
@@ -485,7 +485,7 @@ func TestGetNN2D(t *testing.T) {
 	store, err := NewKDTree(2, STORESIZE)
 	assert.NoError(t, err)
 
-	toSearch, toFind, toStore := createValues(2, 50) // 4D and 20 values stored
+	toSearch, toFind, toStore := createValues(2, 50)
 
 	for _, kv := range toStore {
 		assert.NoError(t, store.Put(&kv.key, kv.value))
@@ -501,7 +501,7 @@ func TestGetNN10D(t *testing.T) {
 	store, err := NewKDTree(10, STORESIZE)
 	assert.NoError(t, err)
 
-	toSearch, toFind, toStore := createValues(10, 60) // 4D and 20 values stored
+	toSearch, toFind, toStore := createValues(10, 60) 
 
 	for _, kv := range toStore {
 		assert.NoError(t, store.Put(&kv.key, kv.value))
@@ -511,6 +511,96 @@ func TestGetNN10D(t *testing.T) {
 		assert.Equal(t, toFind.value, result)
 	}
 }
+
+func TestGetNN100DBenchMark(t *testing.T) {
+
+	fmt.Println("\nRunning 100D Benchmark")
+
+	store, err := NewKDTree(100, STORESIZE * 100)
+	assert.NoError(t, err)
+
+	toSearch, toFind, toStore := createValues(100, 5000000) // 100D and 500 values stored
+
+	t0 := time.Now().UnixMicro()
+
+	for _, kv := range toStore {
+		assert.NoError(t, store.Put(&kv.key, kv.value))
+	}
+
+	t1 := time.Now().UnixMicro()
+
+	if result, err := store.GetNN(&toSearch.key); assert.NoError(t, err) {
+		assert.Equal(t, toFind.value, result)
+	}
+
+	t2 := time.Now().UnixMicro()
+
+	fmt.Println("Store Time [μs]", t1 - t0)
+	fmt.Println("NN Time [μs]", t2 - t1)
+
+}
+
+
+func TestGetNN10DBenchMark(t *testing.T) {
+
+	fmt.Println("\nRunning 10D Benchmark")
+
+	store, err := NewKDTree(10, STORESIZE * 100)
+	assert.NoError(t, err)
+
+	toSearch, toFind, toStore := createValues(10, 5000000) // 100D and 500 values stored
+
+	t0 := time.Now().UnixMicro()
+
+	for _, kv := range toStore {
+		assert.NoError(t, store.Put(&kv.key, kv.value))
+	}
+
+	t1 := time.Now().UnixMicro()
+
+	if result, err := store.GetNN(&toSearch.key); assert.NoError(t, err) {
+		assert.Equal(t, toFind.value, result)
+	}
+
+	t2 := time.Now().UnixMicro()
+
+	fmt.Println("Store Time [μs]", t1 - t0)
+	fmt.Println("NN Time [μs]", t2 - t1)
+
+}
+
+
+
+func TestGetNN3DBenchMark(t *testing.T) {
+
+	fmt.Println("\nRunning 3D Benchmark")
+
+
+	store, err := NewKDTree(3, STORESIZE * 100)
+	assert.NoError(t, err)
+
+	toSearch, toFind, toStore := createValues(3, 5000000) // 100D and 500 values stored
+	
+
+	t0 := time.Now().UnixMicro()
+
+	for _, kv := range toStore {
+		assert.NoError(t, store.Put(&kv.key, kv.value))
+	}
+
+	t1 := time.Now().UnixMicro()
+
+	if result, err := store.GetNN(&toSearch.key); assert.NoError(t, err) {
+		assert.Equal(t, toFind.value, result)
+	}
+
+	t2 := time.Now().UnixMicro()
+
+	fmt.Println("Store Time [μs]", t1 - t0)
+	fmt.Println("NN Time [μs]", t2 - t1)
+
+}
+
 
 // create values for different dimensions
 // first return value is the value to search
