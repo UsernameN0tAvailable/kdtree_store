@@ -7,11 +7,11 @@ package main
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"math"
 	"math/rand"
 	"testing"
 	"time"
-	"github.com/stretchr/testify/assert"
 )
 
 const (
@@ -218,6 +218,64 @@ func TestUpsert(t *testing.T) {
 		assert.Len(t, result, 1)
 		assert.Equal(t, dataNew, result[0])
 	}
+}
+
+func TestScanePartial3D(t *testing.T) {
+	store, err := NewKDTree(3, STORESIZE)
+	assert.NoError(t, err)
+	// Add a key first
+	oldData := RandString()
+
+	// create and store points
+	point1 := NewPoint(Key{UInt64(0), UInt64(0), UInt64(0)})
+	point2 := NewPoint(Key{UInt64(1), UInt64(1), UInt64(1)})
+	point3 := NewPoint(Key{UInt64(2), UInt64(2), UInt64(2)})
+	point4 := NewPoint(Key{UInt64(2), UInt64(3), UInt64(2)})
+	point5 := NewPoint(Key{UInt64(3), UInt64(3), UInt64(3)})
+
+	assert.NoError(t, store.Put(&point1, oldData))
+	assert.NoError(t, store.Put(&point2, oldData))
+	assert.NoError(t, store.Put(&point3, oldData))
+	assert.NoError(t, store.Put(&point4, oldData))
+	assert.NoError(t, store.Put(&point5, oldData))
+
+	from := NewPoint(Key{UInt64(0), None(), None()})
+	to := NewPoint(Key{UInt64(3), None(), None()})
+
+	entries, err := store.Scan(&from, &to)
+
+	assert.NoError(t, err)
+	// Check length of slice
+	assert.Len(t, entries, 5)
+}
+
+func TestScanePartial3DOnlyOnePartial(t *testing.T) {
+	store, err := NewKDTree(3, STORESIZE)
+	assert.NoError(t, err)
+	// Add a key first
+	oldData := RandString()
+
+	// create and store points
+	point1 := NewPoint(Key{UInt64(0), UInt64(0), UInt64(0)})
+	point2 := NewPoint(Key{UInt64(1), UInt64(1), UInt64(1)})
+	point3 := NewPoint(Key{UInt64(2), UInt64(2), UInt64(2)})
+	point4 := NewPoint(Key{UInt64(2), UInt64(3), UInt64(2)})
+	point5 := NewPoint(Key{UInt64(3), UInt64(3), UInt64(3)})
+
+	assert.NoError(t, store.Put(&point1, oldData))
+	assert.NoError(t, store.Put(&point2, oldData))
+	assert.NoError(t, store.Put(&point3, oldData))
+	assert.NoError(t, store.Put(&point4, oldData))
+	assert.NoError(t, store.Put(&point5, oldData))
+
+	from := NewPoint(Key{UInt64(0), UInt64(1), None()})
+	to := NewPoint(Key{UInt64(2), UInt64(2), None()})
+
+	entries, err := store.Scan(&from, &to)
+
+	assert.NoError(t, err)
+	// Check length of slice
+	assert.Len(t, entries, 2)
 }
 
 func TestScanRange3D(t *testing.T) {
@@ -435,7 +493,6 @@ func TestPartialGet3D(t *testing.T) {
 	toFind2 := RandString()
 	toFind3 := RandString()
 
-
 	// create and store points
 	point1 := NewPoint(Key{UInt64(0), UInt64(0), UInt64(0)})
 	point2 := NewPoint(Key{UInt64(1), UInt64(1), UInt64(1)})
@@ -460,11 +517,9 @@ func TestPartialGet3D(t *testing.T) {
 	assert.Equal(t, toFind2, entries[1])
 	assert.Equal(t, toFind3, entries[2])
 
-
 }
 
 func TestGetNN3D(t *testing.T) {
-
 
 	store, err := NewKDTree(3, STORESIZE)
 	assert.NoError(t, err)
@@ -477,7 +532,7 @@ func TestGetNN3D(t *testing.T) {
 
 	if result, err := store.GetNN(&toSearch.key); assert.NoError(t, err) {
 		assert.Equal(t, toFind.value, result)
-	} 
+	}
 }
 
 func TestGetNN2D(t *testing.T) {
@@ -501,7 +556,7 @@ func TestGetNN10D(t *testing.T) {
 	store, err := NewKDTree(10, STORESIZE)
 	assert.NoError(t, err)
 
-	toSearch, toFind, toStore := createValues(10, 60) 
+	toSearch, toFind, toStore := createValues(10, 60)
 
 	for _, kv := range toStore {
 		assert.NoError(t, store.Put(&kv.key, kv.value))
@@ -516,7 +571,7 @@ func TestGetNN100DBenchMark(t *testing.T) {
 
 	fmt.Println("\nRunning 100D Benchmark")
 
-	store, err := NewKDTree(100, STORESIZE * 100)
+	store, err := NewKDTree(100, STORESIZE*100)
 	assert.NoError(t, err)
 
 	toSearch, toFind, toStore := createValues(100, 5000000) // 100D and 500 values stored
@@ -535,17 +590,16 @@ func TestGetNN100DBenchMark(t *testing.T) {
 
 	t2 := time.Now().UnixMicro()
 
-	fmt.Println("Store Time [μs]", t1 - t0)
-	fmt.Println("NN Time [μs]", t2 - t1)
+	fmt.Println("Store Time [μs]", t1-t0)
+	fmt.Println("NN Time [μs]", t2-t1)
 
 }
-
 
 func TestGetNN10DBenchMark(t *testing.T) {
 
 	fmt.Println("\nRunning 10D Benchmark")
 
-	store, err := NewKDTree(10, STORESIZE * 100)
+	store, err := NewKDTree(10, STORESIZE*100)
 	assert.NoError(t, err)
 
 	toSearch, toFind, toStore := createValues(10, 5000000) // 100D and 500 values stored
@@ -564,23 +618,19 @@ func TestGetNN10DBenchMark(t *testing.T) {
 
 	t2 := time.Now().UnixMicro()
 
-	fmt.Println("Store Time [μs]", t1 - t0)
-	fmt.Println("NN Time [μs]", t2 - t1)
+	fmt.Println("Store Time [μs]", t1-t0)
+	fmt.Println("NN Time [μs]", t2-t1)
 
 }
-
-
 
 func TestGetNN3DBenchMark(t *testing.T) {
 
 	fmt.Println("\nRunning 3D Benchmark")
 
-
-	store, err := NewKDTree(3, STORESIZE * 100)
+	store, err := NewKDTree(3, STORESIZE*100)
 	assert.NoError(t, err)
 
 	toSearch, toFind, toStore := createValues(3, 5000000) // 100D and 500 values stored
-	
 
 	t0 := time.Now().UnixMicro()
 
@@ -596,11 +646,10 @@ func TestGetNN3DBenchMark(t *testing.T) {
 
 	t2 := time.Now().UnixMicro()
 
-	fmt.Println("Store Time [μs]", t1 - t0)
-	fmt.Println("NN Time [μs]", t2 - t1)
+	fmt.Println("Store Time [μs]", t1-t0)
+	fmt.Println("NN Time [μs]", t2-t1)
 
 }
-
 
 // create values for different dimensions
 // first return value is the value to search
@@ -624,7 +673,7 @@ func createValues(dimensions int, keyValuePairsCount int) (KeyValuePair, KeyValu
 
 	toSearch := keyValuePairs[0]
 	toStore := keyValuePairs[1:]
-	var nearest KeyValuePair 
+	var nearest KeyValuePair
 
 	for _, kv := range toStore {
 		_, distance := toSearch.key.GetDistance(&kv.key)
