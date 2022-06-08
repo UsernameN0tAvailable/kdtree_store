@@ -252,7 +252,7 @@ func (t *KDTree) Scan(from *Point, to *Point) ([]Value, error) {
 		return make([]Value, 0), errors.New("wrong key size")
 	}
 
-	result := t.scanQuery(t.root, from , to, 0)
+	result := t.scanQuery(t.root, from, to, 0)
 
 	return result, nil
 }
@@ -268,34 +268,38 @@ func (t *KDTree) scanQuery(node *Node, from *Point, to *Point, depth int) []Valu
 	keyIndex := depth % t.kSize
 	nodeKey := node.KeyValueAt(keyIndex)
 
-	var fromK uint64 = 0 
+	var fromK uint64 = 0
 	var toK uint64 = math.MaxUint64
 
 	if from != nil {
 		_, tmpK := from.GetKeyAt(keyIndex)
-		fromK = tmpK.Value
+		if tmpK.IsSome {
+			fromK = tmpK.Value
+		}
 	}
 
 	if to != nil {
 		_, tmpK := to.GetKeyAt(keyIndex)
-		toK = tmpK.Value
+		if tmpK.IsSome {
+			toK = tmpK.Value
+		}
 	}
 
 	branchesToVisit := 0
 
 	if nodeKey >= fromK {
-		result := t.scanQuery(node.Left, from, to, depth + 1)
+		result := t.scanQuery(node.Left, from, to, depth+1)
 		values = append(values, result...)
 		branchesToVisit++
 	}
 
 	if nodeKey <= toK {
-		result := t.scanQuery(node.Right, from, to, depth + 1)
+		result := t.scanQuery(node.Right, from, to, depth+1)
 		values = append(values, result...)
 		branchesToVisit++
 	}
 
-	if branchesToVisit == 2 && node.Key.IsWithin(from, to)   {
+	if branchesToVisit == 2 && node.Key.IsWithin(from, to) {
 		values = append(values, node.GetValue())
 	}
 
@@ -328,10 +332,10 @@ func (t *KDTree) nearestNeighbour(node *Node, key *Point, depth int) *Node {
 	nodeKeyValue := node.KeyValueAt(keyIndex)
 	_, kv := key.GetKeyAt(keyIndex)
 
-	var nextBranch *Node 
+	var nextBranch *Node
 	var alternativeBranch *Node
 
-	if   kv.Value > nodeKeyValue {
+	if kv.Value > nodeKeyValue {
 		nextBranch = node.Right
 		alternativeBranch = node.Left
 	} else {
@@ -339,7 +343,7 @@ func (t *KDTree) nearestNeighbour(node *Node, key *Point, depth int) *Node {
 		alternativeBranch = node.Right
 	}
 
-	tmp := t.nearestNeighbour(nextBranch, key, depth + 1)
+	tmp := t.nearestNeighbour(nextBranch, key, depth+1)
 	closest := findClosest(key, tmp, node)
 
 	if closest == nil {
@@ -350,11 +354,10 @@ func (t *KDTree) nearestNeighbour(node *Node, key *Point, depth int) *Node {
 
 	dist := math.Abs(float64(nodeKeyValue) - float64(kv.Value))
 
-	if (distanceToBest >= dist ) {
-		tmp = t.nearestNeighbour(alternativeBranch, key, depth + 1)
+	if distanceToBest >= dist {
+		tmp = t.nearestNeighbour(alternativeBranch, key, depth+1)
 		closest = findClosest(key, tmp, closest)
 	}
-
 
 	return closest
 }
@@ -378,16 +381,13 @@ func findClosest(key *Point, node1 *Node, node2 *Node) *Node {
 	return node2
 }
 
-
-
-
 func (t *KDTree) Upsert(key *Point, value Value) error {
 
 	if key.GetSize() != t.kSize || key.IsPartial() {
 		return errors.New("Wrong key!")
 	}
 
-	_,_, node := t.searchQuery(key)
+	_, _, node := t.searchQuery(key)
 
 	if node == nil {
 		return errors.New("Couldnt find node to upsert")
@@ -460,13 +460,13 @@ func (t *KDTree) partialSearchQuery(depth int, key *Point, node *Node) []Value {
 
 	nodeKeyValue := node.KeyValueAt(keyIndex)
 
-	if !kv.IsSome || nodeKeyValue  >= kv.Value {
-		resultLeft :=t.partialSearchQuery(depth + 1, key, node.Left)
+	if !kv.IsSome || nodeKeyValue >= kv.Value {
+		resultLeft := t.partialSearchQuery(depth+1, key, node.Left)
 		values = append(values, resultLeft...)
 	}
 
 	if !kv.IsSome || nodeKeyValue < kv.Value {
-		resultRight :=t.partialSearchQuery(depth + 1, key, node.Right)
+		resultRight := t.partialSearchQuery(depth+1, key, node.Right)
 		values = append(values, resultRight...)
 	}
 

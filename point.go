@@ -21,30 +21,35 @@ func NewPoint(c Key) Point {
 	return Point{coords: c}
 }
 
-
 func (p *Point) IsWithin(from *Point, to *Point) bool {
 
-	var fromCoord uint64 =  0
-	var toCoord uint64 =  math.MaxUint64
+	var fromCoord uint64 = 0
+	var toCoord uint64 = math.MaxUint64
 
 	for i, nk := range p.coords {
 
-
 		if from != nil {
-			_, fromK :=  from.GetKeyAt(i)
-			fromCoord = fromK.Value
+			_, fromK := from.GetKeyAt(i)
+			if fromK.IsSome {
+				fromCoord = fromK.Value
+			} else {
+				fromCoord = 0
+			}
 		}
 
 		if to != nil {
-			_, toK :=  to.GetKeyAt(i)
-			toCoord = toK.Value
-	}
+			_, toK := to.GetKeyAt(i)
+			if toK.IsSome {
+				toCoord = toK.Value
+			} else {
+				toCoord = math.MaxUint64
+			}
+		}
 
 		if nk.Value > toCoord || nk.Value < fromCoord {
 			return false
 		}
 	}
-
 
 	return true
 }
@@ -67,7 +72,6 @@ func (p *Point) IsEqual(pc *Point) bool {
 	return true
 }
 
-
 func (p *Point) IsPartiallyEqual(pc *Point) bool {
 
 	if p.GetSize() != pc.GetSize() {
@@ -87,7 +91,6 @@ func (p *Point) IsPartiallyEqual(pc *Point) bool {
 	return true
 }
 
-
 func (p *Point) IsPartial() bool {
 
 	for _, k := range p.coords {
@@ -101,9 +104,8 @@ func (p *Point) IsPartial() bool {
 }
 
 func (p *Point) GetByteSize() uint64 {
-	return uint64(len(p.coords)) * 12 + 10
+	return uint64(len(p.coords))*12 + 10
 }
-
 
 func (p *Point) GetSize() int {
 	return len(p.coords)
@@ -150,7 +152,7 @@ func (p *Point) GetDistance(p_1 *Point) (error, float64) {
 // size is 12 bytes
 type OptionalUInt64 struct {
 	IsSome bool
-	Value uint64
+	Value  uint64
 }
 
 func UInt64(value uint64) OptionalUInt64 {
