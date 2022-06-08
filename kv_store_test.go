@@ -418,7 +418,6 @@ func TestScanLERange3D(t *testing.T) {
 	to := NewPoint(Key{UInt64(2), UInt64(2), UInt64(2)})
 
 	entries, err := store.Scan(nil, &to)
-
 	assert.NoError(t, err)
 	// Check length of slice
 	assert.Len(t, entries, 3)
@@ -567,14 +566,14 @@ func TestGetNN10D(t *testing.T) {
 	}
 }
 
-func TestGetNN100DBenchMark(t *testing.T) {
+func Test100DBenchMark(t *testing.T) {
 
 	fmt.Println("\nRunning 100D Benchmark")
 
 	store, err := NewKDTree(100, STORESIZE*100)
 	assert.NoError(t, err)
 
-	toSearch, toFind, toStore := createValues(100, 5000000) // 100D and 500 values stored
+	toSearch, toFind, toStore := createValues(100, 500000) // 100D and 500 values stored
 
 	t0 := time.Now().UnixMicro()
 
@@ -590,19 +589,24 @@ func TestGetNN100DBenchMark(t *testing.T) {
 
 	t2 := time.Now().UnixMicro()
 
+	getTime := benchmarkGet(t, store, toStore)
+	scanTime := benchmarkScan(t, store, toStore)
+
 	fmt.Println("Store Time [μs]", t1-t0)
+	fmt.Println("Get Time [μs]", getTime)
 	fmt.Println("NN Time [μs]", t2-t1)
+	fmt.Println("Scan Time [μs]", scanTime)
 
 }
 
-func TestGetNN10DBenchMark(t *testing.T) {
+func Test10DBenchMark(t *testing.T) {
 
 	fmt.Println("\nRunning 10D Benchmark")
 
 	store, err := NewKDTree(10, STORESIZE*100)
 	assert.NoError(t, err)
 
-	toSearch, toFind, toStore := createValues(10, 5000000) // 100D and 500 values stored
+	toSearch, toFind, toStore := createValues(10, 500000) // 100D and 500 values stored
 
 	t0 := time.Now().UnixMicro()
 
@@ -618,19 +622,24 @@ func TestGetNN10DBenchMark(t *testing.T) {
 
 	t2 := time.Now().UnixMicro()
 
+	getTime := benchmarkGet(t, store, toStore)
+	scanTime := benchmarkScan(t, store, toStore)
+
 	fmt.Println("Store Time [μs]", t1-t0)
+	fmt.Println("Get Time [μs]", getTime)
 	fmt.Println("NN Time [μs]", t2-t1)
+	fmt.Println("Scan Time [μs]", scanTime)
 
 }
 
-func TestGetNN3DBenchMark(t *testing.T) {
+func Test3DBenchMark(t *testing.T) {
 
 	fmt.Println("\nRunning 3D Benchmark")
 
 	store, err := NewKDTree(3, STORESIZE*100)
 	assert.NoError(t, err)
 
-	toSearch, toFind, toStore := createValues(3, 5000000) // 100D and 500 values stored
+	toSearch, toFind, toStore := createValues(3, 500000) // 100D and 500 values stored
 
 	t0 := time.Now().UnixMicro()
 
@@ -646,10 +655,54 @@ func TestGetNN3DBenchMark(t *testing.T) {
 
 	t2 := time.Now().UnixMicro()
 
+	getTime := benchmarkGet(t, store, toStore)
+	scanTime := benchmarkScan(t, store, toStore)
+
 	fmt.Println("Store Time [μs]", t1-t0)
+	fmt.Println("Get Time [μs]", getTime)
 	fmt.Println("NN Time [μs]", t2-t1)
+	fmt.Println("Scan Time [μs]", scanTime)
 
 }
+
+
+func benchmarkGet(t *testing.T, store *KDTree, storedValues []KeyValuePair) int64 {
+
+	totOp := 10
+
+	var timeSum int64 = 0
+
+	for i := 0; i < totOp; i ++ {
+		t0 := time.Now().UnixMicro()
+		_, err := store.Get(&storedValues[rand.Intn(len(storedValues))].key)
+		assert.NoError(t, err)
+		timeSum += (time.Now().UnixMicro() - t0)
+	}
+
+	return timeSum / int64(totOp)
+}
+
+// worst case -> scan whole tree
+func benchmarkScan(t *testing.T, store *KDTree, storedValues []KeyValuePair) uint64 {
+
+	totOp := 100
+
+	var timeSum uint64 = 0
+
+	for i := 0; i < totOp; i ++ {
+		t0 := time.Now().UnixMicro()
+		_, err := store.Scan(
+			nil, 
+			nil)
+		assert.NoError(t, err)
+		timeSum += uint64(time.Now().UnixMicro() - t0)
+	}
+
+	return timeSum / uint64(totOp)
+}
+
+
+
 
 // create values for different dimensions
 // first return value is the value to search

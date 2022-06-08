@@ -299,6 +299,7 @@ func (t *KDTree) scanQuery(node *Node, from *Point, to *Point, depth int) []Valu
 		branchesToVisit++
 	}
 
+
 	if branchesToVisit == 2 && node.Key.IsWithin(from, to) {
 		values = append(values, node.GetValue())
 	}
